@@ -1,3 +1,5 @@
+import 'package:appdatfood/admin/admin_login.dart';
+import 'package:appdatfood/admin/home_admin.dart';
 import 'package:appdatfood/pages/bottomnav.dart';
 import 'package:appdatfood/pages/home.dart';
 import 'package:appdatfood/pages/login.dart';
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Onboard()
+      home: HomeAdmin()
     );
   }
 }
