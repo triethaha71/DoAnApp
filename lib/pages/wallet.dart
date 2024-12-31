@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/app_constant.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,25 @@ class Wallet extends StatefulWidget {
 }
 
 class _WalletState extends State<Wallet> {
+  String? wallet;
+  int? add;
+
+  getthesharedpref() async {
+    wallet = await SharedPreferenceHelper().getUserWallet();
+    setState(() {});
+  }
+
+  ontheload() async {
+    await getthesharedpref();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    ontheload();
+    super.initState();
+  }
+
   Map<String, dynamic>? paymentIntent;
 
   @override
@@ -198,6 +218,10 @@ class _WalletState extends State<Wallet> {
   Future<void> displayPaymentSheet(String amount) async {
     try {
       await Stripe.instance.presentPaymentSheet();
+
+      add = int.parse(wallet!) + int.parse(amount);
+      await SharedPreferenceHelper().saveUserWallet(add.toString());
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -206,6 +230,8 @@ class _WalletState extends State<Wallet> {
             children: [
               Row(
                 children: [
+                  
+
                   Icon(Icons.check_circle, color: Colors.green),
                   SizedBox(width: 10),
                   Text("Payment Successful"),
@@ -215,6 +241,9 @@ class _WalletState extends State<Wallet> {
           ),
         ),
       );
+
+      await getthesharedpref();
+
       paymentIntent = null; // Reset trạng thái
     } on StripeException catch (e) {
       print('StripeException: $e');

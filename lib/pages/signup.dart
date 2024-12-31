@@ -1,8 +1,11 @@
 import 'package:appdatfood/pages/bottomnav.dart';
 import 'package:appdatfood/pages/login.dart';
+import 'package:appdatfood/service/database.dart';
+import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -34,6 +37,22 @@ class _SignupState extends State<Signup> {
               "Đăng ký thành công",
               style: TextStyle(fontSize: 20.0),
             ))));
+
+            String Id= randomAlphaNumeric(10);
+            Map<String, dynamic> addUserInfo={
+              "Name" : namecontroller.text,
+              "Email" : mailcontroller.text,
+              "Wallet" : "0",
+              "Id": Id,
+            };
+            await DatabaseMethods().addUserDetail(addUserInfo, Id);
+            await SharedPreferenceHelper().saveUserName(namecontroller.text);
+            await SharedPreferenceHelper().saveUserEmail(mailcontroller.text);
+            await SharedPreferenceHelper().saveUserWallet('0');
+            await SharedPreferenceHelper().saveUserId(Id);
+
+
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Bottomnav()));
       } on FirebaseException catch (e) {
