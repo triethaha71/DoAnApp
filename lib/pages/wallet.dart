@@ -30,7 +30,7 @@ class _WalletState extends State<Wallet> {
                     padding: EdgeInsets.only(bottom: 10.0),
                     child: Center(
                         child: Text(
-                      "Ví",
+                      "Wallet",
                       style: AppWidget.HeadlineTextFeildStyle(),
                     )))),
             SizedBox(
@@ -55,7 +55,7 @@ class _WalletState extends State<Wallet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Ví của tôi",
+                        "Balance",
                         style: AppWidget.LightTextFeildStyle(),
                       ),
                       SizedBox(
@@ -76,7 +76,7 @@ class _WalletState extends State<Wallet> {
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                "Thêm tiền",
+                "Deposit",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
             ),
@@ -86,44 +86,64 @@ class _WalletState extends State<Wallet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFE9E2E2)),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "\$" + "100",
-                    style: AppWidget.semiBooldTextFeildStyle(),
+                GestureDetector(
+                  onTap: () {
+                    makePayment('100');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFE9E2E2)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "\$" + "100",
+                      style: AppWidget.semiBooldTextFeildStyle(),
+                    ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFE9E2E2)),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "\$" + "500",
-                    style: AppWidget.semiBooldTextFeildStyle(),
+                GestureDetector(
+                  onTap: () {
+                    makePayment('500');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFE9E2E2)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "\$" + "500",
+                      style: AppWidget.semiBooldTextFeildStyle(),
+                    ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFE9E2E2)),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "\$" + "1000",
-                    style: AppWidget.semiBooldTextFeildStyle(),
+                GestureDetector(
+                  onTap: () {
+                    makePayment('1000');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFE9E2E2)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "\$" + "1000",
+                      style: AppWidget.semiBooldTextFeildStyle(),
+                    ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFE9E2E2)),
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "\$" + "2000",
-                    style: AppWidget.semiBooldTextFeildStyle(),
+                GestureDetector(
+                  onTap: () {
+                    makePayment('2000');
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFE9E2E2)),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "\$" + "2000",
+                      style: AppWidget.semiBooldTextFeildStyle(),
+                    ),
                   ),
                 ),
               ],
@@ -141,7 +161,7 @@ class _WalletState extends State<Wallet> {
               ),
               child: Center(
                 child: Text(
-                  "Thêm tiền",
+                  "Confirm",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.0,
@@ -158,59 +178,59 @@ class _WalletState extends State<Wallet> {
 
   Future<void> makePayment(String amount) async {
     try {
+      // Tạo Payment Intent
       paymentIntent = await createPaymentIntent(amount, 'USD');
-      await Stripe.instance
-          .initPaymentSheet(
-              paymentSheetParameters: SetupPaymentSheetParameters(
-                  paymentIntentClientSecret: paymentIntent!['client_secret'],
-                  style: ThemeMode.dark,
-                  merchantDisplayName: 'Adnan'))
-          .then((value) => {});
-
-      displayPaymentSheet(amount);
+      // Khởi tạo Payment Sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntent!['client_secret'],
+          style: ThemeMode.dark,
+          merchantDisplayName: 'Adnan',
+        ),
+      );
+      // Hiển thị Payment Sheet
+      await displayPaymentSheet(amount);
     } catch (e, s) {
-      print('exception: $e$s');
+      print('Exception in makePayment: $e$s');
     }
   }
 
-  displayPaymentSheet(String amount) async {
+  Future<void> displayPaymentSheet(String amount) async {
     try {
-      await Stripe.instance.presentCustomerSheet().then((value) async {
-        showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-                  content: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                          Text("Payment Successful")
-                        ],
-                      )
-                    ],
-                  ),
-                ));
-
-        paymentIntent = null;
-      }).onError((error, stackTrace) {
-        print('Error is:---> $error $stackTrace');
-      });
-    } on StripeException catch (e) {
-      print('Error is:--> $e');
+      await Stripe.instance.presentPaymentSheet();
       showDialog(
-          context: context,
-          builder: (_) => const AlertDialog(
-                content: Text("Cancelled"),
-              ));
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text("Payment Successful"),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+      paymentIntent = null; // Reset trạng thái
+    } on StripeException catch (e) {
+      print('StripeException: $e');
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Text("Payment Cancelled"),
+        ),
+      );
     } catch (e) {
-      print('$e');
+      print('Unknown Exception: $e');
     }
   }
 
-  createPaymentIntent(String amount, String currency) async {
+  Future<Map<String, dynamic>> createPaymentIntent(
+      String amount, String currency) async {
     try {
       Map<String, dynamic> body = {
         'amount': calculateAmount(amount),
@@ -219,23 +239,26 @@ class _WalletState extends State<Wallet> {
       };
 
       var response = await http.post(
-        Uri.parse('http://api.stripe.com/v1/payment_intents'),
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
         headers: {
           'Authorization': 'Bearer $secretKey',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: body,
       );
-      print('Payment Intent Body->>> ${response.body.toString()}');
-      return jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to create Payment Intent');
+      }
     } catch (err) {
-      print('err charging user: ${err.toString()}');
+      print('Error creating Payment Intent: $err');
+      throw Exception('Error creating Payment Intent');
     }
   }
 
-  calculateAmount(String amount) {
-    final calculatedAmount = (int.parse(amount) * 100);
-
-    return calculatedAmount.toString();
+  String calculateAmount(String amount) {
+    return (int.parse(amount) * 100).toString();
   }
 }
