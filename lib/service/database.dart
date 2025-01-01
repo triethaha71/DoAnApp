@@ -24,4 +24,10 @@ class DatabaseMethods {
         .collection(category)
         .add(foodInfoMap);
   }
+
+  Future <Stream<QuerySnapshot>> getFoodItem(String name)async{
+    return await FirebaseFirestore.instance.collection(name).snapshots();
+    
+  }
+
 }
