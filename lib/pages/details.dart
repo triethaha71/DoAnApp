@@ -14,7 +14,13 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  int a = 1;
+  int a = 1 ,total=0;
+
+  @override
+  void initState() {
+    super.initState();
+    total=int.parse(widget.price);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +66,7 @@ class _DetailsState extends State<Details> {
                   onTap: () {
                     if (a > 1) {
                       --a;
+                      total = total - int.parse(widget.price);
                     }
                     setState(() {});
                   },
@@ -86,6 +93,7 @@ class _DetailsState extends State<Details> {
                 GestureDetector(
                   onTap: () {
                     ++a;
+                    total = total + int.parse(widget.price);
                     setState(() {});
                   },
                   child: Container(
@@ -146,7 +154,7 @@ class _DetailsState extends State<Details> {
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                       Text(
-                        "\$"+ widget.price,
+                        "\$"+ total.toString(),
                         style: AppWidget.HeadlineTextFeildStyle(),
                       )
                     ],
