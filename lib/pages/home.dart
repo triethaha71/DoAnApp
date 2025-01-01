@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Details()));
+                            MaterialPageRoute(builder: (context) => Details(detail: ds["Detail"],name: ds["Name"],price: ds["Price"],image: ds["Image"],)));
                       },
                       child: Container(
                         margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
@@ -130,7 +130,7 @@ class _HomeState extends State<Home> {
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Details()));
+                            MaterialPageRoute(builder: (context) => Details(detail: ds["Detail"],name: ds["Name"],price: ds["Price"],image: ds["Image"],)));
                       },
                       child: Container(
                         margin: EdgeInsets.all(4),

@@ -2,7 +2,12 @@ import 'package:appdatfood/widget/widget_support.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
-  const Details({super.key});
+  String image, name, detail, price;
+  Details(
+      {required this.detail,
+      required this.image,
+      required this.name,
+      required this.price});
 
   @override
   State<Details> createState() => _DetailsState();
@@ -29,8 +34,8 @@ class _DetailsState extends State<Details> {
                   Icons.arrow_back_ios_new_outlined,
                   color: Colors.black,
                 )),
-            Image.asset(
-              "images/salad2.png",
+            Image.network(
+              widget.image,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
               fit: BoxFit.fill,
@@ -44,13 +49,10 @@ class _DetailsState extends State<Details> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Mediterranean",
+                      widget.name,
                       style: AppWidget.semiBooldTextFeildStyle(),
                     ),
-                    Text(
-                      "Chickpea Salad",
-                      style: AppWidget.boldTextFeildStyle(),
-                    ),
+                    
                   ],
                 ),
                 Spacer(),
@@ -102,8 +104,7 @@ class _DetailsState extends State<Details> {
               height: 20.0,
             ),
             Text(
-              "it will be very helpful if you add - how to make a system in this app in which, if a user logs in once then it will not ask the user to log in twice",
-              maxLines: 3,
+              widget.detail,maxLines: 4,
               style: AppWidget.LightTextFeildStyle(),
             ),
             SizedBox(
@@ -145,15 +146,17 @@ class _DetailsState extends State<Details> {
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                       Text(
-                        "\25.000đ",
+                        "\$"+ widget.price,
                         style: AppWidget.HeadlineTextFeildStyle(),
                       )
                     ],
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width/2,
+                    width: MediaQuery.of(context).size.width / 2,
                     padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -164,7 +167,9 @@ class _DetailsState extends State<Details> {
                               fontSize: 16.0,
                               fontFamily: 'Poppins'),
                         ),
-                        SizedBox(width: 30.0,),
+                        SizedBox(
+                          width: 30.0,
+                        ),
                         Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -175,7 +180,9 @@ class _DetailsState extends State<Details> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 10.0,),
+                        SizedBox(
+                          width: 10.0,
+                        ),
                       ],
                     ),
                   )
