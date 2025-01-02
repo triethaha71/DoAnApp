@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:appdatfood/service/auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:appdatfood/service/shared_pref.dart';
 import 'package:flutter/material.dart';
@@ -359,41 +360,46 @@ class _ProfileState extends State<Profile> {
           SizedBox(
             height: 30.0,
           ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Material(
-              borderRadius: BorderRadius.circular(10),
-              elevation: 2.0,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: 15.0,
-                  horizontal: 10.0,
-                ),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.delete,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 30.0,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Delete Account",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600),
-                        )
-                      ],
-                    )
-                  ],
+          GestureDetector(
+            onTap: (){
+              AuthMethods().deleteuser();
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(10),
+                elevation: 2.0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15.0,
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        width: 30.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Delete Account",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -401,41 +407,46 @@ class _ProfileState extends State<Profile> {
           SizedBox(
             height: 30.0,
           ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Material(
-              borderRadius: BorderRadius.circular(10),
-              elevation: 2.0,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: 15.0,
-                  horizontal: 10.0,
-                ),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 30.0,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Log out",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600),
-                        )
-                      ],
-                    )
-                  ],
+          GestureDetector(
+            onTap: (){
+              AuthMethods().SignOut();
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(10),
+                elevation: 2.0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15.0,
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.logout,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        width: 30.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Log out",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
