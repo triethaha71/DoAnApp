@@ -1,4 +1,7 @@
+import 'package:appdatfood/service/database.dart';
+import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
@@ -15,10 +18,26 @@ class Details extends StatefulWidget {
 
 class _DetailsState extends State<Details> {
   int a = 1 ,total=0;
+  String? id;
+
+  getthesharepref()async{
+    id=await SharedPreferenceHelper().getUserId();
+    setState(() {
+      
+    });
+  }
+
+  ontheload()async{
+    await getthesharepref();
+    setState(() {
+      
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    ontheload();
     total=int.parse(widget.price);
   }
 
@@ -159,39 +178,56 @@ class _DetailsState extends State<Details> {
                       )
                     ],
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          "Add to card",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontFamily: 'Poppins'),
-                        ),
-                        SizedBox(
-                          width: 30.0,
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Icon(
-                            Icons.shopping_cart_outlined,
-                            color: Colors.white,
+                  GestureDetector(
+                    onTap: ()async{
+                      Map<String,dynamic>addFoodtoCart={
+                        "Name":widget.name,
+                        "Quanlity": a.toString(),
+                        "Total": total.toString(),
+                        "Image":widget.image
+                      };
+                    await DatabaseMethods().addFoodToCart(addFoodtoCart, id!);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Food Added to Cart",
+                style: TextStyle(fontSize: 18.0),
+              )));
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Add to card",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                                fontFamily: 'Poppins'),
                           ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                      ],
+                          SizedBox(
+                            width: 30.0,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ],
