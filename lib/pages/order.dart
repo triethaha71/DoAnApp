@@ -86,16 +86,16 @@ class _OrderState extends State<Order> {
       });
       print(
           "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
-           setState(() {
-              total = cartItems.fold(
-                  0,
-                      (sum, doc) {
-                    int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
-                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                     return sum + totalValue * quantity;
-                  }
-              );
-            });
+        setState(() {
+            total = cartItems.fold(
+                0,
+                    (sum, doc) {
+                  int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+                  int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                   return sum + totalValue * quantity;
+                }
+            );
+          });
     } catch (e) {
       print('OrderPage: Error updating quantity $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -104,6 +104,31 @@ class _OrderState extends State<Order> {
     }
   }
 
+    Future<void> _deleteCartItem(DocumentSnapshot ds) async{
+      print('OrderPage: _deleteCartItem called for item ${ds.id}');
+       try{
+          await FirebaseFirestore.instance.collection('users').doc(id).collection("Cart").doc(ds.id).delete();
+           print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
+         setState(() {
+                cartItems.remove(ds);
+              total = cartItems.fold(
+                  0,
+                      (sum, doc) {
+                    int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                     return sum + totalValue * quantity;
+                  }
+                  );
+            });
+        } catch (e){
+          print('OrderPage: Error deleting item $e');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red,
+              content: Text("Error deleting item")));
+        }
+
+    }
+
   Widget foodCart() {
     return StreamBuilder(
       stream: foodStream,
@@ -111,18 +136,17 @@ class _OrderState extends State<Order> {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
-        cartItems = snapshot.data.docs;
-
-       // Calculate total price after data is available
+         cartItems = snapshot.data.docs;
+         
+         // Calculate total price after data is available
         total = cartItems.fold(
-          0,
-            (sum, doc) {
+            0,
+                (sum, doc) {
               int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
               int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-              return sum + totalValue * quantity;
-            },
-        );
-
+               return sum + totalValue * quantity;
+            }
+            );
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: cartItems.length,
@@ -130,77 +154,90 @@ class _OrderState extends State<Order> {
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
             DocumentSnapshot ds = cartItems[index];
-            return Container(
-              margin:
-                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-              child: Material(
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              _updateCartItemQuantity(ds, -1);
-                            },
-                            child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: const Center(child: Text("-"))),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            return Dismissible(
+             key: Key(ds.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                  color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.only(right: 20.0),
+                   child: Icon(Icons.delete, color: Colors.white,)
+              ),
+              onDismissed: (direction){
+                _deleteCartItem(ds);
+              },
+              child: Container(
+                margin:
+                    const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+                child: Material(
+                  elevation: 5.0,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                _updateCartItemQuantity(ds, -1);
+                              },
+                              child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: const Center(child: Text("-"))),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
                               child: Text(ds["Quanlity"] ?? '1', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                             ),
-                          InkWell(
-                            onTap: () {
-                              _updateCartItemQuantity(ds, 1);
-                            },
-                            child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    border: Border.all(),
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: const Center(child: Text("+"))),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 20.0),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(60),
-                        child: Image.network(
-                          ds["Image"],
-                          height: 90,
-                          width: 90,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 20.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              ds["Name"],
-                              style: AppWidget.semiBooldTextFeildStyle(),
-                            ),
-                            Text(
-                              "\$" + ds["Total"],
-                              style: AppWidget.semiBooldTextFeildStyle(),
+                            InkWell(
+                              onTap: () {
+                                _updateCartItemQuantity(ds, 1);
+                              },
+                              child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: const Center(child: Text("+"))),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 20.0),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(60),
+                          child: Image.network(
+                            ds["Image"],
+                            height: 90,
+                            width: 90,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: 20.0),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ds["Name"],
+                                style: AppWidget.semiBooldTextFeildStyle(),
+                              ),
+                              Text(
+                                "\$" + ds["Total"],
+                                style: AppWidget.semiBooldTextFeildStyle(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
