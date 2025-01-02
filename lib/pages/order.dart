@@ -14,24 +14,34 @@ class Order extends StatefulWidget {
 }
 
 class _OrderState extends State<Order> {
-  String? id;
-  int total = 0;
+  String? id, wallet;
+  int total = 0, amount2= 0;
+  Timer? _timer; // Add a Timer variable
 
   void startTimer() {
-    Timer(Duration(seconds: 3), () {
-      setState(() {});
+    _timer = Timer(Duration(seconds: 3), () { 
+      // Assign the Timer to _timer
+      amount2=total;
+      if(mounted){
+         setState(() {});
+      }
     });
   }
 
   getthesharedpref() async {
     id = await SharedPreferenceHelper().getUserId();
-    setState(() {});
+    wallet =await SharedPreferenceHelper().getUserWallet();
+     if(mounted){
+        setState(() {});
+      }
   }
 
   ontheload() async {
     await getthesharedpref();
     foodStream = await DatabaseMethods().getFoodCart(id!);
-    setState(() {});
+    if(mounted){
+        setState(() {});
+      }
   }
 
   @override
@@ -39,6 +49,12 @@ class _OrderState extends State<Order> {
     ontheload();
     startTimer();
     super.initState();
+  }
+
+    @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the Timer if it's active
+    super.dispose();
   }
 
   Stream? foodStream;
@@ -160,20 +176,27 @@ class _OrderState extends State<Order> {
             SizedBox(
               height: 20.0,
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.black, borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),
-              child: Center(
-                  child: Text(
-                "CheckOut",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            GestureDetector(
+              onTap: ()async{
+                int amount = int.parse(wallet!)-total;
+                await DatabaseMethods().UpdateUserwallet(id!, amount.toString());
+                await SharedPreferenceHelper().saveUserWallet(amount.toString());
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: Colors.black, borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),
+                child: Center(
+                    child: Text(
+                  "CheckOut",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                )),
+              ),
             )
           ],
         ),

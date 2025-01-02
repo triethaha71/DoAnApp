@@ -17,9 +17,6 @@ class DatabaseMethods {
   }
 
   Future AddFoodItem(Map<String, dynamic> foodInfoMap, String category) async {
-    // Firestore API để lưu trữ dữ liệu trong danh mục (collection)
-    // Đảm bảo đã thêm Firebase và Firestore vào dự án
-    // Lưu ý: Sử dụng tên collection là danh mục
     return await FirebaseFirestore.instance
         .collection(category)
         .add(foodInfoMap);
@@ -41,6 +38,15 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection("users").doc(id).collection("Cart").snapshots();
   }
 
-  
+  CardUserwallet(String id, String amount) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"Wallet": amount});
+  }
+
+  Future<Stream<QuerySnapshot>> getUserWallet(String id) async {
+    return await FirebaseFirestore.instance.collection("users").doc(id).collection("Wallet").snapshots();
+  }
 
 }
