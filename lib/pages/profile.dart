@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:appdatfood/pages/OrderHistoryPage.dart';
 import 'package:appdatfood/service/auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:appdatfood/service/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:appdatfood/service/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -16,7 +19,7 @@ class Profile extends StatefulWidget {
 // Service for Imgur
 class ImgurService {
   static const String clientId =
-      "15f738ce9e52f01"; // Thay bằng Client ID của bạn
+      "15f738ce9e52f01"; // Replace with your Imgur Client ID
   static Future<String?> uploadImageToImgur(File imageFile) async {
     try {
       final Uri apiUrl = Uri.parse("https://api.imgur.com/3/image");
@@ -34,7 +37,7 @@ class ImgurService {
         final Map<String, dynamic> jsonResponse =
             json.decode(responseData.body);
 
-        // Lấy link ảnh từ JSON response
+        // Get image link from JSON response
         return jsonResponse["data"]["link"];
       } else {
         print("Failed to upload image: ${response.statusCode}");
@@ -54,7 +57,6 @@ class _ProfileState extends State<Profile> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
 
-
   getthesharedpref() async {
     profile = await SharedPreferenceHelper().getUserProfile();
     name = await SharedPreferenceHelper().getUserName();
@@ -67,7 +69,6 @@ class _ProfileState extends State<Profile> {
     setState(() {});
   }
 
-
   Future _pickProfileImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile == null) return;
@@ -79,53 +80,53 @@ class _ProfileState extends State<Profile> {
   }
 
   Future _uploadProfileImage() async {
-      if (_profileImage == null) {
+    if (_profileImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "No image was selected to upload.",
+            style: TextStyle(fontSize: 18.0),
+          )));
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      String? imageUrl = await ImgurService.uploadImageToImgur(_profileImage!);
+      if (imageUrl != null) {
+        setState(() {
+          _profileImageUrl = imageUrl;
+          _isLoading = false;
+        });
+        await SharedPreferenceHelper().saveUserProfile(imageUrl);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: const Color.fromARGB(255, 11, 156, 85),
+            content: Text(
+              "Profile image has been updated successfully",
+              style: TextStyle(fontSize: 18.0),
+            )));
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "No image was selected to upload.",
+              "Failed to upload image",
               style: TextStyle(fontSize: 18.0),
             )));
-        return;
       }
-        setState(() {
-           _isLoading = true;
-          });
-    try {
-          String? imageUrl = await ImgurService.uploadImageToImgur(_profileImage!);
-            if (imageUrl != null) {
-                  setState(() {
-                  _profileImageUrl = imageUrl;
-                   _isLoading = false;
-                });
-            await SharedPreferenceHelper().saveUserProfile(imageUrl);
-             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  backgroundColor: const Color.fromARGB(255, 11, 156, 85),
-                  content: Text(
-                    "Profile image has been updated successfully",
-                    style: TextStyle(fontSize: 18.0),
-                  )));
-          } else {
-              setState(() {
-                  _isLoading = false;
-                });
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Colors.red,
-                content: Text(
-                  "Failed to upload image",
-                  style: TextStyle(fontSize: 18.0),
-                )));
-          }
-        } catch (e) {
-             setState(() {
-                   _isLoading = false;
-                 });
-             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                "Error uploading profile image: $e",
-                style: TextStyle(fontSize: 18.0),
-              )));
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "Error uploading profile image: $e",
+            style: TextStyle(fontSize: 18.0),
+          )));
     }
   }
 
@@ -134,11 +135,12 @@ class _ProfileState extends State<Profile> {
     onthisload();
     super.initState();
   }
-    @override
-    void dispose() {
-        // Hủy các controller nếu có
-      super.dispose();
-    }
+
+  @override
+  void dispose() {
+    // Hủy các controller nếu có
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,37 +167,37 @@ class _ProfileState extends State<Profile> {
                   child: Material(
                     elevation: 10.0,
                     borderRadius: BorderRadius.circular(60),
-                    child: Stack(
-                        children: [
-                           ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                            child: _profileImageUrl == null
+                    child: Stack(children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(60),
+                          child: _profileImageUrl == null
                               ? Image.asset("images/boy.jpg",
                                   height: 120, width: 120, fit: BoxFit.cover)
-                              :Image.network(
-                                    _profileImageUrl!,
-                                  height: 120,
-                                  width: 120,
-                                  fit: BoxFit.cover
-                                )
-                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: InkWell(
-                                onTap: _pickProfileImage,
-                                child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(15)
+                              : Image.network(_profileImageUrl!,
+                                  height: 120, width: 120, fit: BoxFit.cover)),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: _pickProfileImage,
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(15)),
+                            child: _isLoading
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Icon(
+                                    Icons.camera_alt_outlined,
+                                    color: Colors.white,
+                                    size: 20,
                                   ),
-                                  child: _isLoading ? CircularProgressIndicator(color: Colors.white,) : Icon(Icons.camera_alt_outlined, color: Colors.white, size: 20,),
-                                ),
-                              ),
-                            )
-                      ],
-                    ),
+                          ),
+                        ),
+                      )
+                    ]),
                   ),
                 ),
               ),
@@ -205,7 +207,7 @@ class _ProfileState extends State<Profile> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      name?? "Không có tên",
+                      name ?? "Không có tên",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 25.0,
@@ -302,7 +304,7 @@ class _ProfileState extends State<Profile> {
                               fontWeight: FontWeight.w600),
                         ),
                         Text(
-                           email ?? "Không có email",
+                          email ?? "Không có email",
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
@@ -311,6 +313,68 @@ class _ProfileState extends State<Profile> {
                       ],
                     )
                   ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+          GestureDetector(
+            onTap: () async {
+              String? userId = await SharedPreferenceHelper().getUserId();
+              print('ProfilePage: userId before navigating to OrderHistoryPage: $userId');
+                if (userId != null){
+                     Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderHistoryPage(userId: userId,),
+                      ),
+                  );
+                } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                            Text("Lỗi: Không thể xác định thông tin người dùng.")),
+                  );
+                }
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Material(
+                borderRadius: BorderRadius.circular(10),
+                elevation: 2.0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 15.0,
+                    horizontal: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.history,
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        width: 30.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Order History",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -361,7 +425,7 @@ class _ProfileState extends State<Profile> {
             height: 30.0,
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               AuthMethods().deleteuser();
             },
             child: Container(
@@ -408,7 +472,7 @@ class _ProfileState extends State<Profile> {
             height: 30.0,
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               AuthMethods().SignOut();
             },
             child: Container(
