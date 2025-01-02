@@ -1,6 +1,7 @@
 import 'package:appdatfood/pages/bottomnav.dart';
 import 'package:appdatfood/pages/forgotpassword.dart';
 import 'package:appdatfood/pages/signup.dart';
+import 'package:appdatfood/service/auth.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +22,17 @@ class _LoginState extends State<Login> {
   TextEditingController userpasswordcontroller = new TextEditingController();
 
   userLogin() async {
+    print('LoginPage: userLogin called');
     try {
+      print('LoginPage: userLogin - calling signInWithEmailAndPassword');
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Bottomnav()));
+      print(
+          'LoginPage: userLogin - signInWithEmailAndPassword success, navigating to Bottomnav');
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Bottomnav()));
     } on FirebaseAuthException catch (e) {
+      print('LoginPage: userLogin - FirebaseAuthException : $e');
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -40,6 +47,16 @@ class _LoginState extends State<Login> {
         )));
       }
     }
+  }
+
+  void googleSignIn() async {
+    print("LoginPage: googleSignIn called");
+    AuthMethods().signInWithGoogle(context);
+  }
+
+  void facebookSignIn() async {
+    print("LoginPage: facebookSignIn called");
+    // logic đăng nhập facebook
   }
 
   @override
@@ -76,6 +93,7 @@ class _LoginState extends State<Login> {
             Container(
               margin: EdgeInsets.only(top: 60.0, left: 20, right: 20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Center(
                       child: Image.asset(
@@ -108,9 +126,9 @@ class _LoginState extends State<Login> {
                               style: AppWidget.HeadlineTextFeildStyle(),
                             ),
                             SizedBox(
-                              height: 30.0,
+                              height: 20.0,
                             ),
-                            TextFormField(
+                             TextFormField(
                               controller: useremailcontroller,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -158,7 +176,7 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             SizedBox(
-                              height: 80.0,
+                              height: 30.0,
                             ),
                             GestureDetector(
                               onTap: () {
@@ -192,13 +210,53 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                             ),
+                                SizedBox(height: 30),
+                             Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: (){
+                                      googleSignIn();
+                                    },
+                                    child: Material(
+                                      elevation: 5.0,
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10)
+                                          ),
+                                          child: Image.asset("images/google.png", width: 35,),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 25),
+                                  GestureDetector(
+                                    onTap: (){
+                                      facebookSignIn();
+                                    },
+                                    child: Material(
+                                      elevation: 5.0,
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10)
+                                          ),
+                                           child: Image.asset("images/facebook.png", width: 35,),
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 70.0,
+                   SizedBox(
+                    height: 50.0,
                   ),
                   GestureDetector(
                       onTap: () {
