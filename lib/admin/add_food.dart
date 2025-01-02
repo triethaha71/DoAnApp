@@ -9,7 +9,8 @@ import 'package:random_string/random_string.dart';
 
 // Service for Imgur
 class ImgurService {
-  static const String clientId = "15f738ce9e52f01"; // Thay bằng Client ID của bạn
+  static const String clientId =
+      "15f738ce9e52f01"; // Thay bằng Client ID của bạn
 
   static Future<String?> uploadImageToImgur(File imageFile) async {
     try {
@@ -18,13 +19,15 @@ class ImgurService {
       final request = http.MultipartRequest("POST", apiUrl);
       request.headers["Authorization"] = "Client-ID $clientId";
 
-      request.files.add(await http.MultipartFile.fromPath("image", imageFile.path));
+      request.files
+          .add(await http.MultipartFile.fromPath("image", imageFile.path));
 
       final response = await request.send();
 
       if (response.statusCode == 200) {
         final responseData = await http.Response.fromStream(response);
-        final Map<String, dynamic> jsonResponse = json.decode(responseData.body);
+        final Map<String, dynamic> jsonResponse =
+            json.decode(responseData.body);
 
         // Lấy link ảnh từ JSON response
         return jsonResponse["data"]["link"];
@@ -38,7 +41,6 @@ class ImgurService {
     }
   }
 }
-
 
 class AddFood extends StatefulWidget {
   const AddFood({super.key});
@@ -176,7 +178,8 @@ class _AddFoodState extends State<AddFood> {
                             width: 150,
                             height: 150,
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 1.5),
+                              border:
+                                  Border.all(color: Colors.black, width: 1.5),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Icon(
