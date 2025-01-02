@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appdatfood/pages/PaymentOptionsPage.dart';
 import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
@@ -7,31 +8,51 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Order extends StatefulWidget {
-  const Order({super.key});
+  const Order({Key? key}) : super(key: key);
 
   @override
   State<Order> createState() => _OrderState();
 }
 
 class _OrderState extends State<Order> {
-  String? id;
+  String? id, wallet;
   int total = 0;
+  Timer? _timer;
+  Stream? foodStream;
+  List<DocumentSnapshot> cartItems = [];
 
   void startTimer() {
-    Timer(Duration(seconds: 3), () {
-      setState(() {});
+    _timer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
-  getthesharedpref() async {
+  Future<void> getthesharedpref() async {
     id = await SharedPreferenceHelper().getUserId();
-    setState(() {});
+    wallet = await SharedPreferenceHelper().getUserWallet();
+    print('OrderPage: userId from shared pref: $id'); // Log userId
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  ontheload() async {
+  Future<void> ontheload() async {
     await getthesharedpref();
-    foodStream = await DatabaseMethods().getFoodCart(id!);
-    setState(() {});
+    if (id == null) {
+      print('OrderPage: Error - userId is null from shared pref');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Lỗi: Không thể xác định thông tin người dùng.")));
+      return;
+    }
+    if (id != null) {
+      // Check if id is not null
+      foodStream = await DatabaseMethods().getFoodCart(id!);
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   @override
@@ -41,106 +62,178 @@ class _OrderState extends State<Order> {
     super.initState();
   }
 
-  Stream? foodStream;
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _updateCartItemQuantity(DocumentSnapshot ds, int change) async {
+    int currentQuantity = int.parse(ds["Quanlity"] ?? '1');
+    int newQuantity = currentQuantity + change;
+
+    if (newQuantity < 1) return;
+    try {
+      print(
+          "OrderPage: _updateCartItemQuantity - Updating quantity for item ${ds.id}, currentQuantity: $currentQuantity, newQuantity: $newQuantity");
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(id)
+          .collection('Cart')
+          .doc(ds.id)
+          .update({
+        "Quanlity": newQuantity.toString(),
+      });
+      print(
+          "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
+           setState(() {
+              total = cartItems.fold(
+                  0,
+                      (sum, doc) {
+                    int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                     return sum + totalValue * quantity;
+                  }
+              );
+            });
+    } catch (e) {
+      print('OrderPage: Error updating quantity $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Error updating quantity")));
+    }
+  }
 
   Widget foodCart() {
     return StreamBuilder(
-        stream: foodStream,
-        builder: (context, AsyncSnapshot snapshot) {
-          return snapshot.hasData
-              ? ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemCount: snapshot.data.docs.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot ds = snapshot.data.docs[index];
-                    total = total + int.parse(ds["Total"]);
-                    return Container(
-                      margin:
-                          EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 90,
-                                width: 40,
+      stream: foodStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        cartItems = snapshot.data.docs;
+
+       // Calculate total price after data is available
+        total = cartItems.fold(
+          0,
+            (sum, doc) {
+              int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+              int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+              return sum + totalValue * quantity;
+            },
+        );
+
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: cartItems.length,
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index) {
+            DocumentSnapshot ds = cartItems[index];
+            return Container(
+              margin:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              _updateCartItemQuantity(ds, -1);
+                            },
+                            child: Container(
+                                height: 30,
+                                width: 30,
                                 decoration: BoxDecoration(
                                     border: Border.all(),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(child: Text(ds["Quanlity"])),
-                              ),
-                              SizedBox(
-                                width: 20.0,
-                              ),
-                              ClipRRect(
-                                  borderRadius: BorderRadius.circular(60),
-                                  child: Image.network(
-                                    ds["Image"],
-                                    height: 90,
-                                    width: 90,
-                                    fit: BoxFit.cover,
-                                  )),
-                              SizedBox(
-                                width: 20.0,
-                              ),
-                              // Chú thích: Đã thêm Expanded widget bao quanh Column để cho phép văn bản vừa vặn
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start, // Căn trái văn bản
-                                  children: [
-                                    Text(
-                                      ds["Name"],
-                                      style: AppWidget.semiBooldTextFeildStyle(),
-                                    ),
-                                    Text(
-                                      "\$" + ds["Total"],
-                                      style: AppWidget.semiBooldTextFeildStyle(),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: const Center(child: Text("-"))),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(ds["Quanlity"] ?? '1', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            ),
+                          InkWell(
+                            onTap: () {
+                              _updateCartItemQuantity(ds, 1);
+                            },
+                            child: Container(
+                                height: 30,
+                                width: 30,
+                                decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: const Center(child: Text("+"))),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20.0),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Image.network(
+                          ds["Image"],
+                          height: 90,
+                          width: 90,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    );
-                  })
-              : CircularProgressIndicator();
-        });
+                      const SizedBox(width: 20.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ds["Name"],
+                              style: AppWidget.semiBooldTextFeildStyle(),
+                            ),
+                            Text(
+                              "\$" + ds["Total"],
+                              style: AppWidget.semiBooldTextFeildStyle(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(top: 60.0),
+        padding: const EdgeInsets.only(top: 60.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Material(
                 elevation: 2.0,
                 child: Container(
-                    padding: EdgeInsets.only(bottom: 10.0),
+                    padding: const EdgeInsets.only(bottom: 10.0),
                     child: Center(
                         child: Text(
                       "Food Cart",
                       style: AppWidget.HeadlineTextFeildStyle(),
                     )))),
+            const SizedBox(height: 20.0),
             SizedBox(
-              height: 20.0,
-            ),
-            Container(
                 height: MediaQuery.of(context).size.height / 2,
                 child: foodCart()),
-            Spacer(),
-            Divider(),
+            const Spacer(),
+            const Divider(),
             Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 10.0),
               child: Row(
@@ -153,27 +246,48 @@ class _OrderState extends State<Order> {
                   Text(
                     "\$" + total.toString(),
                     style: AppWidget.semiBooldTextFeildStyle(),
-                  )
+                  ),
                 ],
               ),
             ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.black, borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),
-              child: Center(
-                  child: Text(
-                "CheckOut",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            const SizedBox(height: 20.0),
+            GestureDetector(
+              onTap: () {
+                if (id == null || wallet == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content:
+                          Text("Lỗi: Không thể xác định thông tin người dùng.")));
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentOptionsPage(
+                      cartItems: cartItems,
+                      total: total,
+                      userId: id!,
+                      wallet: wallet!,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(10)),
+                margin:
+                    const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),
+                child: const Center(
+                    child: Text(
+                  "Mua Hàng",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                )),
+              ),
             )
           ],
         ),

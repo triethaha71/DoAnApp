@@ -1,4 +1,3 @@
-import 'package:appdatfood/admin/add_food.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
@@ -17,9 +16,6 @@ class DatabaseMethods {
   }
 
   Future AddFoodItem(Map<String, dynamic> foodInfoMap, String category) async {
-    // Firestore API để lưu trữ dữ liệu trong danh mục (collection)
-    // Đảm bảo đã thêm Firebase và Firestore vào dự án
-    // Lưu ý: Sử dụng tên collection là danh mục
     return await FirebaseFirestore.instance
         .collection(category)
         .add(foodInfoMap);
@@ -37,10 +33,68 @@ class DatabaseMethods {
         .add(userInfoMap);
   }
 
-    Future<Stream<QuerySnapshot>> getFoodCart(String id) async {
-    return await FirebaseFirestore.instance.collection("users").doc(id).collection("Cart").snapshots();
+  Future<Stream<QuerySnapshot>> getFoodCart(String id) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .collection("Cart")
+        .snapshots();
   }
 
-  
+  CardUserwallet(String id, String amount) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .update({"Wallet": amount});
+  }
 
+  Future<Stream<QuerySnapshot>> getUserWallet(String id) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .doc(id)
+        .collection("Wallet")
+        .snapshots();
+  }
+
+  // Method to clear the cart
+  Future<void> clearCart(String userId) async {
+    print("DatabaseMethods: clearCart called for user $userId");
+    final cartRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('Cart');
+    final cartSnapshot = await cartRef.get();
+
+    // Delete each document in the cart
+    for (final doc in cartSnapshot.docs) {
+      await doc.reference.delete();
+    }
+    print("DatabaseMethods: clearCart completed for user $userId");
+  }
+  
+   // Method to save order history
+  Future<void> saveOrderHistory(String userId, List<Map<String, dynamic>> items, String total, String paymentMethod) async {
+    print("DatabaseMethods: saveOrderHistory called for user $userId");
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('orders').add({
+        "items": items,
+        "total": total,
+        "paymentMethod": paymentMethod,
+         "orderTime": DateTime.now(),
+      });
+       print("DatabaseMethods: saveOrderHistory completed for user $userId");
+  }
+
+  // Method to get order history
+  Future<Stream<QuerySnapshot>> getOrderHistory(String userId) async {
+     print("DatabaseMethods: getOrderHistory called for user $userId");
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('orders')
+         .orderBy('orderTime', descending: true)
+        .snapshots();
+  }
 }
