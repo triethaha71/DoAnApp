@@ -4,6 +4,7 @@ import 'package:appdatfood/pages/bottomnav.dart';
 import 'package:appdatfood/pages/home.dart';
 import 'package:appdatfood/pages/login.dart';
 import 'package:appdatfood/pages/onboard.dart';
+import 'package:appdatfood/pages/profile.dart';
 import 'package:appdatfood/pages/signup.dart';
 import 'package:appdatfood/widget/app_constant.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Bottomnav()
+      home: Profile()
 
     );
   }
