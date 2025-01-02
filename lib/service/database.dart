@@ -8,11 +8,26 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  UpdateUserwallet(String id, String amount) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .doc(id)
-        .update({"Wallet": amount});
+   Future UpdateUserwallet(String id, String amount) async {
+     print('DatabaseMethods: UpdateUserwallet called for userId: $id with amount $amount');
+      try {
+           DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(id).get();
+           if (userDoc.exists){
+                 print('DatabaseMethods: UpdateUserwallet - user exist, updating wallet');
+                return await FirebaseFirestore.instance
+                   .collection("users")
+                   .doc(id)
+                   .update({"Wallet": amount});
+           }
+            else{
+               print('DatabaseMethods: UpdateUserwallet - user not exist, creating new document');
+               return await FirebaseFirestore.instance.collection('users').doc(id).set({'Wallet': amount});
+            }
+
+      } on FirebaseException catch (e) {
+        print('DatabaseMethods: UpdateUserwallet - Error: $e');
+         throw e;
+      }
   }
 
   Future AddFoodItem(Map<String, dynamic> foodInfoMap, String category) async {
