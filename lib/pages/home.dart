@@ -1,5 +1,7 @@
 import 'package:appdatfood/pages/details.dart';
+import 'package:appdatfood/pages/order.dart' as orderPage;
 import 'package:appdatfood/service/database.dart';
+import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,18 @@ class _HomeState extends State<Home> {
   bool icecream = false, pizza = false, salad = false, burger = false;
   Stream? fooditemStream;
   String _searchQuery = '';
+   String userName = "Name"; // Default value
+  
+  Future<void> getName() async{
+     String? storedName = await SharedPreferenceHelper().getUserName();
+    print('HomePage: userName from shared pref: $storedName');
+    if (storedName != null){
+         setState(() {
+            userName = storedName;
+          });
+     }
+
+  }
 
   ontheload() async {
     fooditemStream = await DatabaseMethods().getFoodItem("Pizza");
@@ -23,7 +37,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    ontheload();
+      getName();
+      ontheload();
     super.initState();
   }
 
@@ -45,7 +60,7 @@ class _HomeState extends State<Home> {
     return StreamBuilder(
         stream: fooditemStream,
         builder: (context, AsyncSnapshot snapshot) {
-          if(!snapshot.hasData){
+           if(!snapshot.hasData){
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -212,16 +227,24 @@ class _HomeState extends State<Home> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hi Mtriet", style: AppWidget.boldTextFeildStyle()),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    padding: EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Icon(
-                      Icons.shopping_cart,
-                      color: Colors.white,
+                  Text("Hi $userName", style: AppWidget.boldTextFeildStyle()),
+                 GestureDetector(
+                    onTap: () {
+                    Navigator.push(
+                      context,
+                     MaterialPageRoute(builder: (context) => const orderPage.Order()),
+                     );
+                 },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Icon(
+                        Icons.shopping_cart,
+                        color: Colors.white,
+                      ),
                     ),
                   )
                 ],
@@ -235,7 +258,7 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 20.0,
               ),
-              Padding(
+               Padding(
                 padding: const EdgeInsets.only(right: 20.0),
                 child: TextField(
                   onChanged: (value) {
@@ -253,7 +276,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(height: 30,), // Add SizedBox here
+              SizedBox(height: 30,),
               Container(
                   margin: EdgeInsets.only(right: 20.0), child: showItem()),
               SizedBox(

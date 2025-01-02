@@ -86,16 +86,16 @@ class _OrderState extends State<Order> {
       });
       print(
           "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
-        setState(() {
-            total = cartItems.fold(
-                0,
-                    (sum, doc) {
-                  int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
-                  int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                   return sum + totalValue * quantity;
-                }
-            );
-          });
+      setState(() {
+        total = cartItems.fold(
+            0,
+                (sum, doc) {
+              int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+              int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+               return sum + totalValue * quantity;
+            }
+        );
+      });
     } catch (e) {
       print('OrderPage: Error updating quantity $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -104,30 +104,30 @@ class _OrderState extends State<Order> {
     }
   }
 
-    Future<void> _deleteCartItem(DocumentSnapshot ds) async{
-      print('OrderPage: _deleteCartItem called for item ${ds.id}');
-       try{
-          await FirebaseFirestore.instance.collection('users').doc(id).collection("Cart").doc(ds.id).delete();
-           print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
-         setState(() {
-                cartItems.remove(ds);
-              total = cartItems.fold(
-                  0,
-                      (sum, doc) {
-                    int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
-                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                     return sum + totalValue * quantity;
-                  }
-                  );
-            });
-        } catch (e){
-          print('OrderPage: Error deleting item $e');
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red,
-              content: Text("Error deleting item")));
-        }
-
+  Future<void> _deleteCartItem(DocumentSnapshot ds) async{
+    print('OrderPage: _deleteCartItem called for item ${ds.id}');
+     try{
+        await FirebaseFirestore.instance.collection('users').doc(id).collection("Cart").doc(ds.id).delete();
+        print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
+        setState(() {
+          cartItems.remove(ds);
+          total = cartItems.fold(
+              0,
+                  (sum, doc) {
+                int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+                int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                 return sum + totalValue * quantity;
+              }
+        );
+      });
+    } catch (e){
+      print('OrderPage: Error deleting item $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Error deleting item")));
     }
+
+  }
 
   Widget foodCart() {
     return StreamBuilder(
@@ -136,9 +136,9 @@ class _OrderState extends State<Order> {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
-         cartItems = snapshot.data.docs;
-         
-         // Calculate total price after data is available
+        cartItems = snapshot.data.docs;
+        
+        // Calculate total price after data is available
         total = cartItems.fold(
             0,
                 (sum, doc) {
@@ -146,7 +146,7 @@ class _OrderState extends State<Order> {
               int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
                return sum + totalValue * quantity;
             }
-            );
+        );
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: cartItems.length,
@@ -155,15 +155,14 @@ class _OrderState extends State<Order> {
           itemBuilder: (context, index) {
             DocumentSnapshot ds = cartItems[index];
             return Dismissible(
-             key: Key(ds.id),
+              key: Key(ds.id),
               direction: DismissDirection.endToStart,
               background: Container(
                   color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: 20.0),
-                   child: Icon(Icons.delete, color: Colors.white,)
-              ),
-              onDismissed: (direction){
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: Icon(Icons.delete, color: Colors.white,)),
+              onDismissed: (direction) {
                 _deleteCartItem(ds);
               },
               child: Container(
@@ -251,21 +250,29 @@ class _OrderState extends State<Order> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            "Food Cart",
+          style: AppWidget.HeadlineTextFeildStyle(),
+        ),
+        centerTitle: true,
+        elevation: 2.0,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: (){
+            print("OrderPage: IconButton - calling Navigator.pop()");
+            Navigator.of(context).pop();
+            print("OrderPage: IconButton - Navigator.pop() called");
+          },
+        ),
+      ),
       body: Container(
-        padding: const EdgeInsets.only(top: 60.0),
+        padding: const EdgeInsets.only(top: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Material(
-                elevation: 2.0,
-                child: Container(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Center(
-                        child: Text(
-                      "Food Cart",
-                      style: AppWidget.HeadlineTextFeildStyle(),
-                    )))),
-            const SizedBox(height: 20.0),
             SizedBox(
                 height: MediaQuery.of(context).size.height / 2,
                 child: foodCart()),
