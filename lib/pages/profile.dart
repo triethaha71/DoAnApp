@@ -13,7 +13,7 @@ class Profile extends StatefulWidget {
   const Profile({super.key});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  _ProfileState createState() => _ProfileState();
 }
 
 // Service for Imgur
@@ -323,21 +323,21 @@ class _ProfileState extends State<Profile> {
           GestureDetector(
             onTap: () async {
               String? userId = await SharedPreferenceHelper().getUserId();
-              print('ProfilePage: userId before navigating to OrderHistoryPage: $userId');
-                if (userId != null){
-                     Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OrderHistoryPage(userId: userId,),
-                      ),
-                  );
-                } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text("Lỗi: Không thể xác định thông tin người dùng.")),
-                  );
-                }
+              print(
+                  'ProfilePage: userId before navigating to OrderHistoryPage: $userId');
+              if (userId != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderHistoryPage(
+                      userId: userId,
+                    ),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Lỗi: Không thể xác định thông tin người dùng.")));
+              }
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -426,7 +426,40 @@ class _ProfileState extends State<Profile> {
           ),
           GestureDetector(
             onTap: () {
-              AuthMethods().deleteuser();
+              print('ProfilePage: delete account button tapped');
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Xóa tài khoản"),
+                      content: const Text(
+                        "Bạn có chắc muốn xóa tài khoản này?",
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false); // Cancel
+                          },
+                          child: const Text("Hủy"),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.of(context).pop(true); // Confirm
+                            if (context != null) {
+                              await AuthMethods().deleteuser(context);
+                              print(
+                                  'ProfilePage: AuthMethods().deleteuser() called');
+                            }
+                          },
+                          child: const Text("Xóa"),
+                        ),
+                      ],
+                    );
+                  }).then((value) {
+                  if (value == true){
+                        AuthMethods().deleteuser(context);
+                    }
+               });
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -473,7 +506,9 @@ class _ProfileState extends State<Profile> {
           ),
           GestureDetector(
             onTap: () {
-              AuthMethods().SignOut();
+              print('ProfilePage: log out button tapped');
+              AuthMethods().SignOut(context);
+                print('ProfilePage: AuthMethods().signOut() called');
             },
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 20.0),
