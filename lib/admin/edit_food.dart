@@ -5,12 +5,12 @@ import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:random_string/random_string.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Service for Imgur
 class ImgurService {
   static const String clientId =
-      "15f738ce9e52f01"; // Thay bằng Client ID của bạn
+      "15f738ce9e52f01"; // Replace with your Client ID
 
   static Future<String?> uploadImageToImgur(File imageFile) async {
     try {
@@ -29,7 +29,7 @@ class ImgurService {
         final Map<String, dynamic> jsonResponse =
             json.decode(responseData.body);
 
-        // Lấy link ảnh từ JSON response
+        // Get image link from JSON response
         return jsonResponse["data"]["link"];
       } else {
         print("Failed to upload image: ${response.statusCode}");
@@ -42,14 +42,23 @@ class ImgurService {
   }
 }
 
-class AddFood extends StatefulWidget {
-  const AddFood({super.key});
+class EditFood extends StatefulWidget {
+  final String documentId;
+  final Map<String, dynamic> foodItemData;
+  final String category;
+
+  const EditFood({
+    Key? key,
+    required this.documentId,
+    required this.foodItemData,
+    required this.category,
+  }) : super(key: key);
 
   @override
-  State<AddFood> createState() => _AddFoodState();
+  State<EditFood> createState() => _EditFoodState();
 }
 
-class _AddFoodState extends State<AddFood> {
+class _EditFoodState extends State<EditFood> {
   final List<String> items = ['Ice-cream', 'Burger', 'Salad', 'Pizza'];
   String? value;
   TextEditingController namecontroller = TextEditingController();
@@ -57,17 +66,29 @@ class _AddFoodState extends State<AddFood> {
   TextEditingController detailcontroller = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
+  String? imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    namecontroller.text = widget.foodItemData['Name'] ?? '';
+    pricecontroller.text = widget.foodItemData['Price'] ?? '';
+    detailcontroller.text = widget.foodItemData['Detail'] ?? '';
+    value = widget.foodItemData['Category'] ?? widget.category;
+    imageUrl = widget.foodItemData['Image'];
+  }
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
-    selectedImage = File(image!.path);
+    if (image != null) {
+      selectedImage = File(image.path);
+    }
     setState(() {});
   }
 
-  // Hàm upload dữ liệu lên Firestore
+  // Function to upload data to Firestore
   uploadItem() async {
-    if (selectedImage != null &&
-        namecontroller.text != "" &&
+    if (namecontroller.text != "" &&
         pricecontroller.text != "" &&
         detailcontroller.text != "") {
       if (value == null) {
@@ -80,42 +101,39 @@ class _AddFoodState extends State<AddFood> {
         return;
       }
 
-      String? imageUrl = await ImgurService.uploadImageToImgur(selectedImage!);
-
+      if(selectedImage != null){
+        imageUrl = await ImgurService.uploadImageToImgur(selectedImage!);
+      }
       if (imageUrl != null) {
-        String addId = randomAlphaNumeric(10);
 
-        Map<String, dynamic> addItem = {
+        Map<String, dynamic> updateItem = {
           "Image": imageUrl,
           "Name": namecontroller.text,
           "Price": pricecontroller.text,
           "Detail": detailcontroller.text,
-          "Category": value, // Thêm trường Category
+          "Category": value,
         };
+        try{
+          await FirebaseFirestore.instance
+              .collection(widget.category)
+              .doc(widget.documentId).update(updateItem);
 
-        await DatabaseMethods().AddFoodItem(addItem, value!).then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: const Color.fromARGB(255, 11, 156, 85),
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Color.fromARGB(255, 11, 156, 85),
               content: Text(
-                "Food item has been added successfully",
+                "Food item has been updated successfully",
                 style: TextStyle(fontSize: 18.0),
               )));
-          setState(() {
-            namecontroller.clear();
-            pricecontroller.clear();
-            detailcontroller.clear();
-            selectedImage = null;
-            value = null;
-          });
-        }).catchError((e) {
+          Navigator.pop(context);
+        }catch (e){
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red,
               content: Text(
-                "Failed to add food item",
+                "Failed to update food item",
                 style: TextStyle(fontSize: 18.0),
               )));
-        });
-      } else {
+        }
+      }  else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.red,
             content: Text(
@@ -123,6 +141,7 @@ class _AddFoodState extends State<AddFood> {
               style: TextStyle(fontSize: 18.0),
             )));
       }
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red,
@@ -147,75 +166,103 @@ class _AddFoodState extends State<AddFood> {
             )),
         centerTitle: true,
         title: Text(
-          "Thêm sản phẩm",
+          "Edit Item",
           style: AppWidget.HeadlineTextFeildStyle(),
         ),
       ),
       body: SingleChildScrollView(
         child: Container(
           margin:
-              EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
+          EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Tải hình ảnh lên",
+                "Upload the item picture",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
               SizedBox(
                 height: 20.0,
               ),
-              selectedImage == null
-                  ? GestureDetector(
-                      onTap: () {
-                        getImage();
-                      },
-                      child: Center(
-                        child: Material(
-                          elevation: 4.0,
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.black, width: 1.5),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Icon(
-                              Icons.camera_alt_outlined,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Center(
-                      child: Material(
-                        elevation: 4.0,
+              selectedImage == null ?
+              imageUrl == null ?
+              GestureDetector(
+                onTap: () {
+                  getImage();
+                },
+                child: Center(
+                  child: Material(
+                    elevation: 4.0,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        border:
+                        Border.all(color: Colors.black, width: 1.5),
                         borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 1.5),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+                      ),
+                      child: Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.black,
                       ),
                     ),
+                  ),
+                ),
+              )
+                  :
+              Center(
+                child: Material(
+                  elevation: 4.0,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.error_outline, size: 50);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              )
+
+                  :
+              Center(
+                child: Material(
+                  elevation: 4.0,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.file(
+                        selectedImage!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 30.0,
               ),
               Text(
-                "Tên món ăn",
+                "Item Name",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
               SizedBox(
@@ -232,7 +279,7 @@ class _AddFoodState extends State<AddFood> {
                   controller: namecontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      //hintText: "Enter item name",
+                      hintText: "Enter item name",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
@@ -240,7 +287,7 @@ class _AddFoodState extends State<AddFood> {
                 height: 30.0,
               ),
               Text(
-                "Giá",
+                "Item Price",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
               SizedBox(
@@ -257,7 +304,7 @@ class _AddFoodState extends State<AddFood> {
                   controller: pricecontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      //hintText: "Enter item price",
+                      hintText: "Enter item price",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
@@ -265,7 +312,7 @@ class _AddFoodState extends State<AddFood> {
                 height: 30.0,
               ),
               Text(
-                "Mô tả",
+                "Item Detail",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
               SizedBox(
@@ -283,7 +330,7 @@ class _AddFoodState extends State<AddFood> {
                   controller: detailcontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      //hintText: "Enter item detail",
+                      hintText: "Enter item detail",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
@@ -291,7 +338,7 @@ class _AddFoodState extends State<AddFood> {
                 height: 20.0,
               ),
               Text(
-                "Chọn danh mục",
+                "Select Category",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
               SizedBox(
@@ -305,27 +352,27 @@ class _AddFoodState extends State<AddFood> {
                     borderRadius: BorderRadius.circular(10)),
                 child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                  items: items
-                      .map((item) => DropdownMenuItem<String>(
+                      items: items
+                          .map((item) => DropdownMenuItem<String>(
                           value: item,
                           child: Text(
                             item,
                             style:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
+                            TextStyle(fontSize: 18.0, color: Colors.black),
                           )))
-                      .toList(),
-                  onChanged: ((value) => setState(() {
+                          .toList(),
+                      onChanged: ((value) => setState(() {
                         this.value = value;
                       })),
-                  dropdownColor: Colors.white,
-                  hint: Text("danh mục"),
-                  iconSize: 36,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black,
-                  ),
-                  value: value,
-                )),
+                      dropdownColor: Colors.white,
+                      hint: Text("Select Category"),
+                      iconSize: 36,
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                      value: value,
+                    )),
               ),
               SizedBox(
                 height: 30.0,
@@ -347,7 +394,7 @@ class _AddFoodState extends State<AddFood> {
                       ),
                       child: Center(
                         child: Text(
-                          "Thêm",
+                          "Update",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 22.0,

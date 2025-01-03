@@ -248,7 +248,7 @@ class _ProfileState extends State<Profile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Name",
+                          "Họ tên",
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
@@ -365,7 +365,7 @@ class _ProfileState extends State<Profile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Order History",
+                            "Lịch sử mua hàng",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20.0,
@@ -408,7 +408,7 @@ class _ProfileState extends State<Profile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Terms and Condition",
+                          "Điều khoản và điều kiện",
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 20.0,
@@ -487,7 +487,7 @@ class _ProfileState extends State<Profile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Delete Account",
+                            "Xóa tài khoản",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20.0,
@@ -536,7 +536,7 @@ class _ProfileState extends State<Profile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Log out",
+                            "Đăng xuất",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20.0,

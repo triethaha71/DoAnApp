@@ -7,6 +7,7 @@ import 'package:appdatfood/widget/widget_support.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Wallet extends StatefulWidget {
   const Wallet({super.key});
@@ -18,7 +19,9 @@ class Wallet extends StatefulWidget {
 class _WalletState extends State<Wallet> {
   String? wallet, id;
   int? add;
-  TextEditingController amountcontroller = new TextEditingController();
+  TextEditingController amountcontroller = TextEditingController();
+  final currencyFormat =
+      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
 
   getthesharedpref() async {
     wallet = await SharedPreferenceHelper().getUserWallet();
@@ -43,29 +46,29 @@ class _WalletState extends State<Wallet> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: wallet == null
-          ? CircularProgressIndicator()
+          ? const CircularProgressIndicator()
           : Container(
-              margin: EdgeInsets.only(top: 60.0),
+              margin: const EdgeInsets.only(top: 60.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Material(
                       elevation: 2.0,
                       child: Container(
-                          padding: EdgeInsets.only(bottom: 10.0),
+                          padding: const EdgeInsets.only(bottom: 10.0),
                           child: Center(
                               child: Text(
-                            "Wallet",
+                            "Ví của tôi",
                             style: AppWidget.HeadlineTextFeildStyle(),
                           )))),
-                  SizedBox(
+                  const SizedBox(
                     height: 30.0,
                   ),
                   Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 10.0),
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(color: Color(0xFFF2F2F2)),
+                    decoration: const BoxDecoration(color: Color(0xFFF2F2F2)),
                     child: Row(
                       children: [
                         Image.asset(
@@ -74,21 +77,21 @@ class _WalletState extends State<Wallet> {
                           width: 60,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 40.0,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Balance",
+                              "Số dư",
                               style: AppWidget.LightTextFeildStyle(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
                             Text(
-                              "\$" + wallet!,
+                              currencyFormat.format(int.tryParse(wallet ?? "0") ?? 0),
                               style: AppWidget.boldTextFeildStyle(),
                             )
                           ],
@@ -96,17 +99,17 @@ class _WalletState extends State<Wallet> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20.0,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: Text(
-                      "Deposit",
+                      "Lựa chọn",
                       style: AppWidget.semiBooldTextFeildStyle(),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10.0,
                   ),
                   Row(
@@ -117,12 +120,12 @@ class _WalletState extends State<Wallet> {
                           makePayment('100');
                         },
                         child: Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xFFE9E2E2)),
+                              border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "100",
+                            currencyFormat.format(100),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
@@ -132,12 +135,12 @@ class _WalletState extends State<Wallet> {
                           makePayment('500');
                         },
                         child: Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xFFE9E2E2)),
+                              border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "500",
+                            currencyFormat.format(500),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
@@ -147,51 +150,37 @@ class _WalletState extends State<Wallet> {
                           makePayment('1000');
                         },
                         child: Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xFFE9E2E2)),
+                              border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "1000",
+                            currencyFormat.format(1000),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('2000');
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "\$" + "2000",
-                            style: AppWidget.semiBooldTextFeildStyle(),
-                          ),
-                        ),
-                      ),
+                      
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50.0,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       openEdit();
                     },
                     child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      padding: EdgeInsets.symmetric(vertical: 12.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        color: Color(0xFF008080),
+                        color: const Color(0xFF008080),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
-                          "Add Money",
+                          "Nạp tiền",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -240,7 +229,7 @@ class _WalletState extends State<Wallet> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
+              const Row(
                 children: [
                   Icon(Icons.check_circle, color: Colors.green),
                   SizedBox(width: 10),
@@ -259,7 +248,7 @@ class _WalletState extends State<Wallet> {
       print('StripeException: $e');
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
+        builder: (_) => const AlertDialog(
           content: Text("Payment Cancelled"),
         ),
       );
@@ -315,12 +304,12 @@ class _WalletState extends State<Wallet> {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Icon(Icons.cancel)),
-                        SizedBox(
+                            child: const Icon(Icons.cancel)),
+                         const SizedBox(
                           width: 60.0,
                         ),
-                        Center(
-                          child: Text("Add Money",
+                        const Center(
+                          child: Text("Nạp tiền",
                               style: TextStyle(
                                 color: Color(0xFF008080),
                                 fontWeight: FontWeight.bold,
@@ -328,45 +317,46 @@ class _WalletState extends State<Wallet> {
                         )
                       ],
                     ),
-                    SizedBox(
+                   const SizedBox(
                       height: 20.0,
                     ),
-                    Text("Amount"),
-                    SizedBox(
+                    const Text("Nhập mệnh giá"),
+                   const SizedBox(
                       height: 10.0,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 10.0,
                       ),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black38, width: 2.0),
+                          border:
+                              Border.all(color: Colors.black38, width: 2.0),
                           borderRadius: BorderRadius.circular(10)),
                       child: TextField(
                         controller: amountcontroller,
-                        decoration: InputDecoration(
-                            border: InputBorder.none, hintText: 'Enter Amount'),
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
                     Center(
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pop(context);
                           makePayment(amountcontroller.text);
                         },
                         child: Container(
                           width: 100,
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                            color: Color(0xFF008080),
+                            color: const Color(0xFF008080),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Center(
+                          child: const Center(
                               child: Text(
-                            "Pay",
+                            "Xác nhận",
                             style: TextStyle(color: Colors.white),
                           )),
                         ),

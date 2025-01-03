@@ -69,7 +69,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Items",
+                        "Hóa đơn",
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                       ListView.builder(
@@ -102,7 +102,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                       Text(item["Name"] ?? "Tên không có",
                                           style:
                                               AppWidget.semiBooldTextFeildStyle()),
-                                      Text("\$" + (item["Total"] ?? "0"),
+                                      Text((item["Total"] ?? "0"),
                                           style:
                                               AppWidget.semiBooldTextFeildStyle()),
                                     ],
@@ -114,7 +114,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                         },
                       ),
                       Text(
-                        "Total: \$${ds["total"]}",
+                        "Total: ${ds["total"]}",
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                        Text("Phương thức thanh toán: ${ds["paymentMethod"]}",
@@ -135,7 +135,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Order History"),
+        title: Center(child: Text("Lịch sử mua hàng", style: AppWidget.boldTextFeildStyle(),),),
       ),
       body: Container(
         padding: EdgeInsets.only(top: 20.0),

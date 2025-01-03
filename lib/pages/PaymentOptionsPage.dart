@@ -3,6 +3,7 @@ import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PaymentOptionsPage extends StatefulWidget {
   final List<DocumentSnapshot> cartItems;
@@ -24,13 +25,15 @@ class PaymentOptionsPage extends StatefulWidget {
 
 class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
   String? selectedPaymentMethod;
+  final currencyFormat =
+      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Thanh Toán",
+          "Hóa đơn",
           style: AppWidget.HeadlineTextFeildStyle(),
         ),
         centerTitle: true,
@@ -50,7 +53,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
             Expanded(
               child: ListView.separated(
                 itemCount: widget.cartItems.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10,),
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final item = widget.cartItems[index];
                   return _buildCartItemCard(item);
@@ -65,10 +68,11 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
               child: Text(
                 'Chọn phương thức thanh toán:',
                 style: AppWidget.semiBooldTextFeildStyle(),
-
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             _buildPaymentOptions(),
             const SizedBox(height: 20),
             _buildPaymentButton(),
@@ -79,8 +83,8 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
   }
 
   Widget _buildCartItemCard(DocumentSnapshot item) {
-     int price = int.tryParse(item["Price"] ?? "0") ?? 0;
-     int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
+    int price = int.tryParse(item["Price"] ?? "0") ?? 0;
+    int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
     return Material(
       elevation: 2.0,
       borderRadius: BorderRadius.circular(12.0),
@@ -107,7 +111,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                   Text(
-                    "\$" + (price * quantity).toString(), // Calculating the total here
+                    currencyFormat.format(price * quantity),
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                 ],
@@ -119,7 +123,6 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
     );
   }
 
-
   Widget _buildTotalSection() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +132,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
           style: AppWidget.semiBooldTextFeildStyle(),
         ),
         Text(
-          "\$" + widget.total.toString(),
+          currencyFormat.format(widget.total),
           style: AppWidget.semiBooldTextFeildStyle(),
         ),
       ],
@@ -175,37 +178,46 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: const Text('Mua Hàng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+          child: const Text(
+            'Xác nhận',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
         ),
       ),
     );
   }
 
   Future<void> _processPayment() async {
-     print("PaymentOptionsPage: _processPayment called, selectedPaymentMethod: $selectedPaymentMethod");
+    print(
+        "PaymentOptionsPage: _processPayment called, selectedPaymentMethod: $selectedPaymentMethod");
     String message;
     if (selectedPaymentMethod == 'wallet') {
       int walletAmount = int.parse(widget.wallet);
       if (walletAmount < widget.total) {
         message = "Số tiền trong ví không đủ!";
-          print("PaymentOptionsPage: _processPayment - Wallet insufficient: walletAmount=$walletAmount, total=${widget.total}");
+        print(
+            "PaymentOptionsPage: _processPayment - Wallet insufficient: walletAmount=$walletAmount, total=${widget.total}");
       } else {
         int amount = walletAmount - widget.total;
-        print("PaymentOptionsPage: _processPayment - Wallet payment processing: previousWallet=$walletAmount, total=${widget.total}, newWallet=$amount");
-        await DatabaseMethods().UpdateUserwallet(widget.userId, amount.toString());
+        print(
+            "PaymentOptionsPage: _processPayment - Wallet payment processing: previousWallet=$walletAmount, total=${widget.total}, newWallet=$amount");
+        await DatabaseMethods()
+            .UpdateUserwallet(widget.userId, amount.toString());
         await SharedPreferenceHelper().saveUserWallet(amount.toString());
-           print("PaymentOptionsPage: _processPayment - Wallet updated, calling _saveOrderHistory and clearCart");
+        print(
+            "PaymentOptionsPage: _processPayment - Wallet updated, calling _saveOrderHistory and clearCart");
         // Lưu thông tin order vào Firestore
-         await _saveOrderHistory();
+        await _saveOrderHistory();
 
         await DatabaseMethods().clearCart(widget.userId);
         Navigator.pop(context);
         message = "Thanh toán thành công bằng ví!";
       }
     } else {
-        print("PaymentOptionsPage: _processPayment - COD payment processing, calling _saveOrderHistory and clearCart");
-       // Lưu thông tin order vào Firestore
-       await _saveOrderHistory();
+      print(
+          "PaymentOptionsPage: _processPayment - COD payment processing, calling _saveOrderHistory and clearCart");
+      // Lưu thông tin order vào Firestore
+      await _saveOrderHistory();
       await DatabaseMethods().clearCart(widget.userId);
       Navigator.pop(context);
       message = "Thanh toán khi nhận hàng thành công";
@@ -215,25 +227,27 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       SnackBar(content: Text(message)),
     );
   }
+
   Future<void> _saveOrderHistory() async {
-      print("PaymentOptionsPage: _saveOrderHistory called");
-        print('PaymentOptionsPage: userId before saveOrderHistory: ${widget.userId}'); // Log userId
-      List<Map<String, dynamic>> items = widget.cartItems.map((item) {
-           int price = int.tryParse(item["Price"] ?? "0") ?? 0;
-           int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
-            return {
-            'Name': item['Name'],
-            'Total': (price * quantity).toString(),
-            'Image': item['Image'],
-          };
-      }).toList();
-     print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
-      await DatabaseMethods().saveOrderHistory(
-        widget.userId,
-        items,
-        widget.total.toString(),
-        selectedPaymentMethod!,
-        );
+    print("PaymentOptionsPage: _saveOrderHistory called");
+    print(
+        'PaymentOptionsPage: userId before saveOrderHistory: ${widget.userId}'); // Log userId
+    List<Map<String, dynamic>> items = widget.cartItems.map((item) {
+      int price = int.tryParse(item["Price"] ?? "0") ?? 0;
+      int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
+      return {
+        'Name': item['Name'],
+        'Total': currencyFormat.format(price * quantity),
+        'Image': item['Image'],
+      };
+    }).toList();
+    print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
+    await DatabaseMethods().saveOrderHistory(
+      widget.userId,
+      items,
+      currencyFormat.format(widget.total),
+      selectedPaymentMethod!,
+    );
      print("PaymentOptionsPage: _saveOrderHistory - order history saved");
-    }
+  }
 }

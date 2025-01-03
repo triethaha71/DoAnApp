@@ -5,6 +5,7 @@ import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,17 +18,18 @@ class _HomeState extends State<Home> {
   bool icecream = false, pizza = false, salad = false, burger = false;
   Stream? fooditemStream;
   String _searchQuery = '';
-   String userName = "Name"; // Default value
-  
-  Future<void> getName() async{
-     String? storedName = await SharedPreferenceHelper().getUserName();
-    print('HomePage: userName from shared pref: $storedName');
-    if (storedName != null){
-         setState(() {
-            userName = storedName;
-          });
-     }
+  String userName = "Name"; // Default value
+  final currencyFormat =
+      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
 
+  Future<void> getName() async {
+    String? storedName = await SharedPreferenceHelper().getUserName();
+    print('HomePage: userName from shared pref: $storedName');
+    if (storedName != null) {
+      setState(() {
+        userName = storedName;
+      });
+    }
   }
 
   ontheload() async {
@@ -37,8 +39,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-      getName();
-      ontheload();
+    getName();
+    ontheload();
     super.initState();
   }
 
@@ -50,9 +52,12 @@ class _HomeState extends State<Home> {
       return foodItems;
     } else {
       print('Home: _filterFoodItems - filtering items with query "$_searchQuery"');
-      return foodItems.where((item) =>
-          (item['Name'] as String).toLowerCase().contains(_searchQuery.toLowerCase()),
-      ).toList();
+      return foodItems
+          .where((item) =>
+              (item['Name'] as String)
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()))
+          .toList();
     }
   }
 
@@ -60,11 +65,12 @@ class _HomeState extends State<Home> {
     return StreamBuilder(
         stream: fooditemStream,
         builder: (context, AsyncSnapshot snapshot) {
-           if(!snapshot.hasData){
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          List<DocumentSnapshot> filteredItems =  _filterFoodItems(snapshot.data.docs);
+          List<DocumentSnapshot> filteredItems =
+              _filterFoodItems(snapshot.data.docs);
 
           return ListView.builder(
               padding: EdgeInsets.zero,
@@ -75,8 +81,14 @@ class _HomeState extends State<Home> {
                 DocumentSnapshot ds = filteredItems[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Details(detail: ds["Detail"],name: ds["Name"],price: ds["Price"],image: ds["Image"],)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Details(
+                                detail: ds["Detail"],
+                                name: ds["Name"],
+                                price: ds["Price"],
+                                image: ds["Image"])));
                   },
                   child: Container(
                     margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
@@ -104,36 +116,35 @@ class _HomeState extends State<Home> {
                               children: [
                                 Container(
                                     width:
-                                    MediaQuery.of(context).size.width /
-                                        2,
+                                        MediaQuery.of(context).size.width / 2,
                                     child: Text(
                                       ds["Name"],
-                                      style: AppWidget
-                                          .semiBooldTextFeildStyle(),
+                                      style:
+                                          AppWidget.semiBooldTextFeildStyle(),
                                     )),
                                 SizedBox(
                                   height: 5.0,
                                 ),
                                 Container(
                                     width:
-                                    MediaQuery.of(context).size.width /
-                                        2,
+                                        MediaQuery.of(context).size.width / 2,
                                     child: Text(
                                       "Honney goot cheese",
                                       style:
-                                      AppWidget.LightTextFeildStyle(),
+                                          AppWidget.LightTextFeildStyle(),
                                     )),
                                 SizedBox(
                                   height: 5.0,
                                 ),
                                 Container(
                                     width:
-                                    MediaQuery.of(context).size.width /
-                                        2,
+                                        MediaQuery.of(context).size.width / 2,
                                     child: Text(
-                                      "\$" + ds["Price"],
-                                      style: AppWidget
-                                          .semiBooldTextFeildStyle(),
+                                      currencyFormat.format(
+                                        int.tryParse(ds["Price"] ?? "0") ?? 0,
+                                      ),
+                                      style:
+                                          AppWidget.semiBooldTextFeildStyle(),
                                     )),
                               ],
                             )
@@ -152,10 +163,11 @@ class _HomeState extends State<Home> {
     return StreamBuilder(
         stream: fooditemStream,
         builder: (context, AsyncSnapshot snapshot) {
-           if(!snapshot.hasData){
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
-          List<DocumentSnapshot> filteredItems =  _filterFoodItems(snapshot.data.docs);
+          List<DocumentSnapshot> filteredItems =
+              _filterFoodItems(snapshot.data.docs);
           return ListView.builder(
               padding: EdgeInsets.zero,
               itemCount: filteredItems.length,
@@ -165,8 +177,14 @@ class _HomeState extends State<Home> {
                 DocumentSnapshot ds = filteredItems[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Details(detail: ds["Detail"],name: ds["Name"],price: ds["Price"],image: ds["Image"],)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Details(
+                                detail: ds["Detail"],
+                                name: ds["Name"],
+                                price: ds["Price"],
+                                image: ds["Image"])));
                   },
                   child: Container(
                     margin: EdgeInsets.all(4),
@@ -202,7 +220,8 @@ class _HomeState extends State<Home> {
                               height: 5.0,
                             ),
                             Text(
-                              "\$" + ds["Price"],
+                              currencyFormat.format(
+                                  int.tryParse(ds["Price"] ?? "0") ?? 0),
                               style: AppWidget.semiBooldTextFeildStyle(),
                             )
                           ],
@@ -227,14 +246,15 @@ class _HomeState extends State<Home> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hi $userName", style: AppWidget.boldTextFeildStyle()),
-                 GestureDetector(
+                  Text("Xin chào $userName", style: AppWidget.boldTextFeildStyle()),
+                  GestureDetector(
                     onTap: () {
-                    Navigator.push(
-                      context,
-                     MaterialPageRoute(builder: (context) => const orderPage.Order()),
-                     );
-                 },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const orderPage.Order()),
+                      );
+                    },
                     child: Container(
                       margin: EdgeInsets.only(right: 20.0),
                       padding: EdgeInsets.all(3),
@@ -252,13 +272,13 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 20.0,
               ),
-              Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
-              Text("Discover and Get Great Food",
+              Text("Món ăn ngon!", style: AppWidget.HeadlineTextFeildStyle()),
+              Text("Khám phá và nhận được những món ăn tuyệt vời",
                   style: AppWidget.LightTextFeildStyle()),
               SizedBox(
                 height: 20.0,
               ),
-               Padding(
+              Padding(
                 padding: const EdgeInsets.only(right: 20.0),
                 child: TextField(
                   onChanged: (value) {
@@ -268,15 +288,19 @@ class _HomeState extends State<Home> {
                     });
                   },
                   decoration: InputDecoration(
-                    hintText: 'Search for food...',
-                    prefixIcon: Icon(Icons.search, color: Colors.grey,),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)
+                    hintText: 'Tìm kiếm món ăn...',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
                     ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
               Container(
                   margin: EdgeInsets.only(right: 20.0), child: showItem()),
               SizedBox(
@@ -299,12 +323,12 @@ class _HomeState extends State<Home> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         GestureDetector(
-          onTap: () async{
+          onTap: () async {
             icecream = true;
             pizza = false;
             salad = false;
             burger = false;
-            fooditemStream= await DatabaseMethods().getFoodItem("Ice-cream");
+            fooditemStream = await DatabaseMethods().getFoodItem("Ice-cream");
             setState(() {});
           },
           child: Material(
@@ -326,12 +350,12 @@ class _HomeState extends State<Home> {
           ),
         ),
         GestureDetector(
-          onTap: ()async {
+          onTap: () async {
             icecream = false;
             pizza = true;
             salad = false;
             burger = false;
-                        fooditemStream= await DatabaseMethods().getFoodItem("Pizza");
+            fooditemStream = await DatabaseMethods().getFoodItem("Pizza");
             setState(() {});
           },
           child: Material(
@@ -353,12 +377,12 @@ class _HomeState extends State<Home> {
           ),
         ),
         GestureDetector(
-          onTap: ()async {
+          onTap: () async {
             icecream = false;
             pizza = false;
             salad = true;
             burger = false;
-                        fooditemStream= await DatabaseMethods().getFoodItem("Salad");
+            fooditemStream = await DatabaseMethods().getFoodItem("Salad");
             setState(() {});
           },
           child: Material(
@@ -380,12 +404,12 @@ class _HomeState extends State<Home> {
           ),
         ),
         GestureDetector(
-          onTap: () async{
+          onTap: () async {
             icecream = false;
             pizza = false;
             salad = false;
             burger = true;
-            fooditemStream= await DatabaseMethods().getFoodItem("Burger");
+            fooditemStream = await DatabaseMethods().getFoodItem("Burger");
             setState(() {});
           },
           child: Material(
