@@ -6,6 +6,7 @@ import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Order extends StatefulWidget {
   const Order({Key? key}) : super(key: key);
@@ -20,6 +21,9 @@ class _OrderState extends State<Order> {
   Timer? _timer;
   Stream? foodStream;
   List<DocumentSnapshot> cartItems = [];
+  final currencyFormat =
+      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
+   StreamSubscription? _cartSubscription;
 
   void startTimer() {
     _timer = Timer(const Duration(seconds: 3), () {
@@ -40,20 +44,26 @@ class _OrderState extends State<Order> {
 
   Future<void> ontheload() async {
     await getthesharedpref();
-    if (id == null) {
+     if (id == null) {
       print('OrderPage: Error - userId is null from shared pref');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Lỗi: Không thể xác định thông tin người dùng.")));
       return;
     }
-    if (id != null) {
-      // Check if id is not null
+     if (id != null) {
       foodStream = await DatabaseMethods().getFoodCart(id!);
-      if (mounted) {
+      _cartSubscription = foodStream?.listen((snapshot) {
+        if (snapshot is QuerySnapshot) {
+           cartItems = snapshot.docs;
+          _calculateTotalPrice();
+        }
+      });
+        if (mounted) {
         setState(() {});
       }
     }
   }
+
 
   @override
   void initState() {
@@ -65,11 +75,12 @@ class _OrderState extends State<Order> {
   @override
   void dispose() {
     _timer?.cancel();
+    _cartSubscription?.cancel();
     super.dispose();
   }
 
-  Future<void> _updateCartItemQuantity(DocumentSnapshot ds, int change) async {
-    int currentQuantity = int.parse(ds["Quanlity"] ?? '1');
+   Future<void> _updateCartItemQuantity(DocumentSnapshot ds, int change) async {
+    int currentQuantity = int.tryParse(ds["Quanlity"] ?? '1') ?? 1;
     int newQuantity = currentQuantity + change;
 
     if (newQuantity < 1) return;
@@ -86,16 +97,6 @@ class _OrderState extends State<Order> {
       });
       print(
           "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
-      setState(() {
-        total = cartItems.fold(
-            0,
-                (sum, doc) {
-                  int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
-                  int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                   return sum + price * quantity;
-                }
-        );
-      });
     } catch (e) {
       print('OrderPage: Error updating quantity $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -103,6 +104,7 @@ class _OrderState extends State<Order> {
           content: Text("Error updating quantity")));
     }
   }
+
 
   Future<void> _deleteCartItem(DocumentSnapshot ds) async {
     print('OrderPage: _deleteCartItem called for item ${ds.id}');
@@ -113,18 +115,8 @@ class _OrderState extends State<Order> {
           .collection("Cart")
           .doc(ds.id)
           .delete();
-      print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
-      setState(() {
-        cartItems.remove(ds);
-        total = cartItems.fold(
-            0,
-                (sum, doc) {
-                int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
-                int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                 return sum + price * quantity;
-              }
-          );
-      });
+      print(
+          'OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
     } catch (e) {
       print('OrderPage: Error deleting item $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -133,26 +125,31 @@ class _OrderState extends State<Order> {
     }
   }
 
-  Widget foodCart() {
+  void _calculateTotalPrice() {
+     int newTotal = 0;
+      if (cartItems.isNotEmpty) {
+          for (var doc in cartItems) {
+              int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
+              int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+               newTotal += price * quantity;
+          }
+        }
+       if (mounted) {
+            setState(() {
+              total = newTotal;
+            });
+        }
+    }
+
+
+   Widget foodCart() {
     return StreamBuilder(
       stream: foodStream,
       builder: (context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
+       if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
-        cartItems = snapshot.data.docs;
-
-        // Calculate total price after data is available
-        total = cartItems.fold(
-            0,
-                (sum, doc) {
-                   int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
-                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                     return sum + price * quantity;
-                }
-        );
-
-        return ListView.builder(
+       return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: cartItems.length,
           shrinkWrap: true,
@@ -197,8 +194,13 @@ class _OrderState extends State<Order> {
                                   child: const Center(child: Text("-"))),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(ds["Quanlity"] ?? '1', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                ds["Quanlity"] ?? '1',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
                             ),
                             InkWell(
                               onTap: () {
@@ -233,8 +235,8 @@ class _OrderState extends State<Order> {
                                 ds["Name"],
                                 style: AppWidget.semiBooldTextFeildStyle(),
                               ),
-                              Text(
-                                "\$" + (int.tryParse(ds["Price"] ?? "0")! * int.parse(ds["Quanlity"] ?? '1')).toString(), // Calculate Total here
+                               Text(
+                                currencyFormat.format((int.tryParse(ds["Price"] ?? "0") ?? 0) * (int.tryParse(ds["Quanlity"] ?? '1') ?? 1)),
                                 style: AppWidget.semiBooldTextFeildStyle(),
                               ),
                             ],
@@ -248,8 +250,8 @@ class _OrderState extends State<Order> {
             );
           },
         );
-      },
-    );
+       }
+     );
   }
 
   @override
@@ -257,7 +259,7 @@ class _OrderState extends State<Order> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Food Cart",
+          "Giỏ Hàng",
           style: AppWidget.HeadlineTextFeildStyle(),
         ),
         centerTitle: true,
@@ -289,11 +291,11 @@ class _OrderState extends State<Order> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Total Price",
+                    "Tổng giá",
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                   Text(
-                    "\$" + total.toString(),
+                    currencyFormat.format(total),
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                 ],
@@ -330,7 +332,7 @@ class _OrderState extends State<Order> {
                     const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),
                 child: const Center(
                     child: Text(
-                  "Mua Hàng",
+                  "Thanh Toán",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
