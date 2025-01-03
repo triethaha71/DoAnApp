@@ -90,10 +90,10 @@ class _OrderState extends State<Order> {
         total = cartItems.fold(
             0,
                 (sum, doc) {
-              int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
-              int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-               return sum + totalValue * quantity;
-            }
+                  int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
+                  int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                   return sum + price * quantity;
+                }
         );
       });
     } catch (e) {
@@ -104,29 +104,33 @@ class _OrderState extends State<Order> {
     }
   }
 
-  Future<void> _deleteCartItem(DocumentSnapshot ds) async{
+  Future<void> _deleteCartItem(DocumentSnapshot ds) async {
     print('OrderPage: _deleteCartItem called for item ${ds.id}');
-     try{
-        await FirebaseFirestore.instance.collection('users').doc(id).collection("Cart").doc(ds.id).delete();
-        print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
-        setState(() {
-          cartItems.remove(ds);
-          total = cartItems.fold(
-              0,
-                  (sum, doc) {
-                int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(id)
+          .collection("Cart")
+          .doc(ds.id)
+          .delete();
+      print('OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
+      setState(() {
+        cartItems.remove(ds);
+        total = cartItems.fold(
+            0,
+                (sum, doc) {
+                int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
                 int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-                 return sum + totalValue * quantity;
+                 return sum + price * quantity;
               }
-        );
+          );
       });
-    } catch (e){
+    } catch (e) {
       print('OrderPage: Error deleting item $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red,
           content: Text("Error deleting item")));
     }
-
   }
 
   Widget foodCart() {
@@ -137,16 +141,17 @@ class _OrderState extends State<Order> {
           return const Center(child: CircularProgressIndicator());
         }
         cartItems = snapshot.data.docs;
-        
+
         // Calculate total price after data is available
         total = cartItems.fold(
             0,
                 (sum, doc) {
-              int totalValue = int.tryParse(doc["Total"] ?? "0") ?? 0;
-              int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
-               return sum + totalValue * quantity;
-            }
+                   int price = int.tryParse(doc["Price"] ?? "0") ?? 0;
+                    int quantity = int.tryParse(doc["Quanlity"] ?? '1') ?? 1;
+                     return sum + price * quantity;
+                }
         );
+
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: cartItems.length,
@@ -161,7 +166,7 @@ class _OrderState extends State<Order> {
                   color: Colors.red,
                   alignment: Alignment.centerRight,
                   padding: EdgeInsets.only(right: 20.0),
-                  child: Icon(Icons.delete, color: Colors.white,)),
+                  child: Icon(Icons.delete, color: Colors.white)),
               onDismissed: (direction) {
                 _deleteCartItem(ds);
               },
@@ -229,7 +234,7 @@ class _OrderState extends State<Order> {
                                 style: AppWidget.semiBooldTextFeildStyle(),
                               ),
                               Text(
-                                "\$" + ds["Total"],
+                                "\$" + (int.tryParse(ds["Price"] ?? "0")! * int.parse(ds["Quanlity"] ?? '1')).toString(), // Calculate Total here
                                 style: AppWidget.semiBooldTextFeildStyle(),
                               ),
                             ],
@@ -252,7 +257,7 @@ class _OrderState extends State<Order> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            "Food Cart",
+          "Food Cart",
           style: AppWidget.HeadlineTextFeildStyle(),
         ),
         centerTitle: true,
@@ -261,7 +266,7 @@ class _OrderState extends State<Order> {
         iconTheme: const IconThemeData(color: Colors.black),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: (){
+          onPressed: () {
             print("OrderPage: IconButton - calling Navigator.pop()");
             Navigator.of(context).pop();
             print("OrderPage: IconButton - Navigator.pop() called");

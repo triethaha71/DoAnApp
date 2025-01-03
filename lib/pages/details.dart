@@ -1,7 +1,6 @@
 import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/widget_support.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
@@ -17,28 +16,24 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  int a = 1 ,total=0;
+  int a = 1, total = 0;
   String? id;
 
-  getthesharepref()async{
-    id=await SharedPreferenceHelper().getUserId();
-    setState(() {
-      
-    });
+  getthesharepref() async {
+    id = await SharedPreferenceHelper().getUserId();
+    setState(() {});
   }
 
-  ontheload()async{
+  ontheload() async {
     await getthesharepref();
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
     ontheload();
-    total=int.parse(widget.price);
+    total = int.parse(widget.price);
   }
 
   @override
@@ -77,7 +72,6 @@ class _DetailsState extends State<Details> {
                       widget.name,
                       style: AppWidget.semiBooldTextFeildStyle(),
                     ),
-                    
                   ],
                 ),
                 Spacer(),
@@ -131,7 +125,8 @@ class _DetailsState extends State<Details> {
               height: 20.0,
             ),
             Text(
-              widget.detail,maxLines: 4,
+              widget.detail,
+              maxLines: 4,
               style: AppWidget.LightTextFeildStyle(),
             ),
             SizedBox(
@@ -173,26 +168,26 @@ class _DetailsState extends State<Details> {
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                       Text(
-                        "\$"+ total.toString(),
+                        "\$" + total.toString(),
                         style: AppWidget.HeadlineTextFeildStyle(),
                       )
                     ],
                   ),
                   GestureDetector(
-                    onTap: ()async{
-                      Map<String,dynamic>addFoodtoCart={
-                        "Name":widget.name,
+                    onTap: () async {
+                      Map<String, dynamic> addFoodtoCart = {
+                        "Name": widget.name,
                         "Quanlity": a.toString(),
-                        "Total": total.toString(),
-                        "Image":widget.image
+                        "Price": widget.price, // Changed to Price
+                        "Image": widget.image
                       };
-                    await DatabaseMethods().addFoodToCart(addFoodtoCart, id!);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Food Added to Cart",
-                style: TextStyle(fontSize: 18.0),
-              )));
+                      await DatabaseMethods().addFoodToCart(addFoodtoCart, id!);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: Colors.orangeAccent,
+                          content: Text(
+                            "Food Added to Cart",
+                            style: TextStyle(fontSize: 18.0),
+                          )));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width / 2,

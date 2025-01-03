@@ -86,8 +86,8 @@ class DatabaseMethods {
     }
     print("DatabaseMethods: clearCart completed for user $userId");
   }
-  
-   // Method to save order history
+
+  // Method to save order history
   Future<void> saveOrderHistory(String userId, List<Map<String, dynamic>> items, String total, String paymentMethod) async {
     print("DatabaseMethods: saveOrderHistory called for user $userId");
     await FirebaseFirestore.instance
