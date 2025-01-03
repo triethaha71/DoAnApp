@@ -79,6 +79,8 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
   }
 
   Widget _buildCartItemCard(DocumentSnapshot item) {
+     int price = int.tryParse(item["Price"] ?? "0") ?? 0;
+     int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
     return Material(
       elevation: 2.0,
       borderRadius: BorderRadius.circular(12.0),
@@ -105,7 +107,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                   Text(
-                    "\$" + item['Total'],
+                    "\$" + (price * quantity).toString(), // Calculating the total here
                     style: AppWidget.semiBooldTextFeildStyle(),
                   ),
                 ],
@@ -116,6 +118,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       ),
     );
   }
+
 
   Widget _buildTotalSection() {
     return Row(
@@ -215,10 +218,14 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
   Future<void> _saveOrderHistory() async {
       print("PaymentOptionsPage: _saveOrderHistory called");
         print('PaymentOptionsPage: userId before saveOrderHistory: ${widget.userId}'); // Log userId
-      List<Map<String, dynamic>> items = widget.cartItems.map((item) => {
-        'Name': item['Name'],
-        'Total': item['Total'],
-        'Image': item['Image'],
+      List<Map<String, dynamic>> items = widget.cartItems.map((item) {
+           int price = int.tryParse(item["Price"] ?? "0") ?? 0;
+           int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
+            return {
+            'Name': item['Name'],
+            'Total': (price * quantity).toString(),
+            'Image': item['Image'],
+          };
       }).toList();
      print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
       await DatabaseMethods().saveOrderHistory(
