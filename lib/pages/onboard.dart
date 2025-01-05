@@ -90,13 +90,13 @@ class _OnboardState extends State<Onboard> {
             },
             //Button
             child: Container(
-              decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: Color(0xFF1e3c72),borderRadius: BorderRadius.circular(20)),
               height: 60,
               margin: EdgeInsets.all(40),
               width: double.infinity,
               child: Center(
                 child: Text(
-                  currentIndex == contents.length - 1?"Get Start":"Next",
+                  currentIndex == contents.length - 1?"Bắt đầu":"tiếp",
                   style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
               ),

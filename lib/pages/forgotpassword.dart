@@ -18,14 +18,14 @@ class _ForgotpasswordState extends State<Forgotpassword> {
   resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: const Text(
         "Email đăt lại mật khẩu đã được gửi!",
         style: TextStyle(fontSize: 18.0),
       )));
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
           "Không tìm thấy tên người sử dụng Email",
           style: TextStyle(fontSize: 18.0),
@@ -41,12 +41,12 @@ class _ForgotpasswordState extends State<Forgotpassword> {
       body: Container(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 70.0,
             ),
             Container(
               alignment: Alignment.topCenter,
-              child: Text(
+              child: const Text(
                 "Khôi phục mật khẩu",
                 style: TextStyle(
                     color: Colors.white,
@@ -54,10 +54,10 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10.0,
             ),
-            Text(
+            const Text(
               "Nhập email của bạn",
               style: TextStyle(
                   color: Colors.white,
@@ -68,11 +68,11 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                 child: Form(
                     key: _formkey,
                     child: Padding(
-                      padding: EdgeInsets.only(left: 10.0),
+                      padding: const EdgeInsets.only(left: 10.0),
                       child: ListView(
                         children: [
                           Container(
-                            padding: EdgeInsets.only(left: 10.0),
+                            padding: const EdgeInsets.only(left: 10.0),
                             decoration: BoxDecoration(
                               border:
                                   Border.all(color: Colors.white70, width: 2.0),
@@ -86,8 +86,8 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                 }
                                 return null;
                               },
-                              style: TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
+                              style: const TextStyle(color: Colors.white),
+                              decoration: const InputDecoration(
                                   hintText: "Email",
                                   hintStyle: TextStyle(
                                       fontSize: 18.0, color: Colors.white),
@@ -99,7 +99,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                   border: InputBorder.none),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40.0,
                           ),
                           GestureDetector(
@@ -113,12 +113,12 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                             },
                             child: Container(
                               width: 140,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Center(
+                              child: const Center(
                                 child: Text(
                                   "Gửi mã",
                                   style: TextStyle(
@@ -129,18 +129,18 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 50.0,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 "Bạn không có tài khoản ?",
                                 style: TextStyle(
                                     fontSize: 18.0, color: Colors.white),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5.0,
                               ),
                               GestureDetector(
@@ -148,9 +148,9 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Signup()));
+                                          builder: (context) => const Signup()));
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Create",
                                   style: TextStyle(
                                     color: Color.fromARGB(255, 184, 166, 6),

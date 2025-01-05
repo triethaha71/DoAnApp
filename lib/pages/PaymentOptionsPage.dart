@@ -106,9 +106,22 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item['Name'],
-                    style: AppWidget.semiBooldTextFeildStyle(),
+                 Row(
+                    children: [
+                      Expanded(
+                      child: Text(
+                       item['Name'],
+                       style: AppWidget.semiBooldTextFeildStyle(),
+                      ),
+                      ),
+                      Align(
+                       alignment: Alignment.centerRight,
+                        child: Text(
+                          'x$quantity',
+                         style: AppWidget.semiBooldTextFeildStyle(),
+                        ),
+                      )
+                    ],
                   ),
                   Text(
                     currencyFormat.format(price * quantity),
@@ -219,7 +232,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       // Lưu thông tin order vào Firestore
       await _saveOrderHistory();
       await DatabaseMethods().clearCart(widget.userId);
-      Navigator.pop(context);
+       Navigator.pop(context);
       message = "Thanh toán khi nhận hàng thành công";
     }
     print("PaymentOptionsPage: _processPayment - Payment completed, message: $message");

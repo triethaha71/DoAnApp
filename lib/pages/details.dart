@@ -66,15 +66,17 @@ class _DetailsState extends State<Details> {
                   Icons.arrow_back_ios_new_outlined,
                   color: Colors.black,
                 )),
-            ClipRRect( //Added ClipRRect to round corners
-             borderRadius: BorderRadius.circular(10), // border radius of 10
-             child: Image.network(
+            ClipRRect(
+              //Added ClipRRect to round corners
+              borderRadius: BorderRadius.circular(10),
+              // border radius of 10
+              child: Image.network(
                 widget.image,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 2.5,
                 fit: BoxFit.fill,
-             ),
-           ),
+              ),
+            ),
             const SizedBox(
               height: 15.0,
             ),

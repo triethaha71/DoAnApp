@@ -1,4 +1,5 @@
 import 'package:appdatfood/admin/add_food.dart';
+import 'package:appdatfood/admin/admin_login.dart';
 import 'package:appdatfood/admin/edit_food.dart';
 import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/widget/widget_support.dart';
@@ -21,17 +22,28 @@ class _HomeAdminState extends State<HomeAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      appBar: AppBar(
+        
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _logout(context);
+            },
+          )
+        ],
+      ),
       body: Container(
-        margin: const EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+        margin: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
         child: Column(
           children: [
             Center(
               child: Text(
-                "Danh sách quan lí",
+                "Danh sách quản lý",
                 style: AppWidget.HeadlineTextFeildStyle(),
               ),
             ),
-            const SizedBox(height: 50.0),
+            const SizedBox(height: 30.0),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -86,6 +98,14 @@ class _HomeAdminState extends State<HomeAdmin> {
       ),
     );
   }
+
+   void _logout(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const AdminLogin()),
+    );
+  }
+
 
   Widget _buildCategoryCard(String category) {
     return Card(
@@ -241,7 +261,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                       .delete();
                   ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(const SnackBar(
                       backgroundColor: Colors.green,
-                      content: Text("Món ăn đã được xóa thành cồn")));
+                      content: Text("Món ăn đã được xóa thành công")));
                 } catch (e) {
                   ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
                       backgroundColor: Colors.red,

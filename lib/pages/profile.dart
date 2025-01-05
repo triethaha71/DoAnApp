@@ -81,7 +81,7 @@ class _ProfileState extends State<Profile> {
 
   Future _uploadProfileImage() async {
     if (_profileImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
             "No image was selected to upload.",
@@ -100,8 +100,8 @@ class _ProfileState extends State<Profile> {
           _isLoading = false;
         });
         await SharedPreferenceHelper().saveUserProfile(imageUrl);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: const Color.fromARGB(255, 11, 156, 85),
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Color.fromARGB(255, 11, 156, 85),
             content: Text(
               "Profile image has been updated successfully",
               style: TextStyle(fontSize: 18.0),
@@ -110,7 +110,7 @@ class _ProfileState extends State<Profile> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
               "Failed to upload image",
@@ -125,7 +125,7 @@ class _ProfileState extends State<Profile> {
           backgroundColor: Colors.red,
           content: Text(
             "Error uploading profile image: $e",
-            style: TextStyle(fontSize: 18.0),
+            style: const TextStyle(fontSize: 18.0),
           )));
     }
   }
@@ -151,7 +151,7 @@ class _ProfileState extends State<Profile> {
           Stack(
             children: [
               Container(
-                padding: EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
+                padding: const EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
                 height: MediaQuery.of(context).size.height / 4.3,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -181,15 +181,15 @@ class _ProfileState extends State<Profile> {
                         child: InkWell(
                           onTap: _pickProfileImage,
                           child: Container(
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
                                 color: Colors.black,
                                 borderRadius: BorderRadius.circular(15)),
                             child: _isLoading
-                                ? CircularProgressIndicator(
+                                ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                : Icon(
+                                : const Icon(
                                     Icons.camera_alt_outlined,
                                     color: Colors.white,
                                     size: 20,
@@ -202,13 +202,13 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 70.0),
+                padding: const EdgeInsets.only(top: 70.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       name ?? "Không có tên",
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 25.0,
                           fontWeight: FontWeight.bold,
@@ -219,16 +219,16 @@ class _ProfileState extends State<Profile> {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Material(
               borderRadius: BorderRadius.circular(10),
               elevation: 2.0,
               child: Container(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 15.0,
                   horizontal: 10.0,
                 ),
@@ -237,17 +237,17 @@ class _ProfileState extends State<Profile> {
                     borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.person,
                       color: Colors.black,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20.0,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Họ tên",
                           style: TextStyle(
                               color: Colors.black,
@@ -256,7 +256,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         Text(
                           name ?? "Không có tên",
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
                               fontWeight: FontWeight.w600),
@@ -268,16 +268,16 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Material(
               borderRadius: BorderRadius.circular(10),
               elevation: 2.0,
               child: Container(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 15.0,
                   horizontal: 10.0,
                 ),
@@ -286,17 +286,17 @@ class _ProfileState extends State<Profile> {
                     borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.email,
                       color: Colors.black,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20.0,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Email",
                           style: TextStyle(
                               color: Colors.black,
@@ -305,7 +305,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         Text(
                           email ?? "Không có email",
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16.0,
                               fontWeight: FontWeight.w600),
@@ -317,7 +317,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           GestureDetector(
@@ -340,19 +340,19 @@ class _ProfileState extends State<Profile> {
               }
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Material(
                 borderRadius: BorderRadius.circular(10),
                 elevation: 2.0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 15.0,
                     horizontal: 10.0,
                   ),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10)),
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.history,
@@ -379,23 +379,23 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Material(
               borderRadius: BorderRadius.circular(10),
               elevation: 2.0,
               child: Container(
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   vertical: 15.0,
                   horizontal: 10.0,
                 ),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10)),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.description,
@@ -421,7 +421,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           GestureDetector(
@@ -462,19 +462,19 @@ class _ProfileState extends State<Profile> {
                });
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Material(
                 borderRadius: BorderRadius.circular(10),
                 elevation: 2.0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 15.0,
                     horizontal: 10.0,
                   ),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10)),
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.delete,
@@ -501,7 +501,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           GestureDetector(
@@ -511,19 +511,19 @@ class _ProfileState extends State<Profile> {
                 print('ProfilePage: AuthMethods().signOut() called');
             },
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              margin: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Material(
                 borderRadius: BorderRadius.circular(10),
                 elevation: 2.0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     vertical: 15.0,
                     horizontal: 10.0,
                   ),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10)),
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(
                         Icons.logout,
