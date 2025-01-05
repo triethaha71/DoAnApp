@@ -329,7 +329,7 @@ class _OrderState extends State<Order> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: Color(0xFF1e3c72),
                     borderRadius: BorderRadius.circular(10)),
                 margin:
                     const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),

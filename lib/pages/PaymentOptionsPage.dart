@@ -106,7 +106,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                 Row(
+                   Row(
                     children: [
                       Expanded(
                       child: Text(
@@ -184,7 +184,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
         child: ElevatedButton(
           onPressed: selectedPaymentMethod == null ? null : _processPayment,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: const Color(0xFF1e3c72),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             shape: RoundedRectangleBorder(
@@ -252,6 +252,8 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
         'Name': item['Name'],
         'Total': currencyFormat.format(price * quantity),
         'Image': item['Image'],
+        'Quanlity' : (item['Quanlity'] ?? "1").toString(),
+         'Price': item['Price'],
       };
     }).toList();
     print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
