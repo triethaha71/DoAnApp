@@ -342,7 +342,7 @@ class _AddFoodState extends State<AddFood> {
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       width: 150,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Color(0xFF1e3c72),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Center(

@@ -2,6 +2,7 @@ import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   final String userId;
@@ -13,6 +14,8 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Stream<QuerySnapshot>? orderStream;
+  final currencyFormat =
+      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
 
   @override
   void initState() {
@@ -83,7 +86,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                             print("OrderHistoryPage: ListView.builder(items) - index1 : $index1");
                            final item = items[index1];
                              //Get Quantity here
-                            String quantity = (item["Quanlity"] ?? "");
+                             String quantity = item["Quanlity"] ?? "0";
+                              int price = int.tryParse(item['Price'] ?? "0") ?? 0;
                               return Container(
                                 margin: const EdgeInsets.only(top: 5.0),
                                 child: Row(
@@ -104,21 +108,21 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                            Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                             children:[
-                                                 Text(item["Name"] ?? "Tên không có",
-                                                 style:
-                                                 AppWidget.semiBooldTextFeildStyle()),
-                                               if(quantity != "")
-                                                Text(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                              Text(item["Name"] ?? "Tên không có",
+                                                  style:
+                                                      AppWidget.semiBooldTextFeildStyle()),
+                                                    Text(
                                                     "x$quantity",
-                                                   style: AppWidget.semiBooldTextFeildStyle(),
-                                                ),
-                                             ],
-                                         ),
-                                          Text((item["Total"] ?? "0"),
-                                              style:
-                                                  AppWidget.semiBooldTextFeildStyle()),
+                                                    style: AppWidget.semiBooldTextFeildStyle(),
+                                                  ),
+                                              ]
+                                          ),
+                                              Text(
+                                                  currencyFormat.format(price * (int.tryParse(quantity) ?? 1)),
+                                                  style: AppWidget.LightTextFeildStyle()
+                                              ),
                                         ],
                                       ),
                                     ),
@@ -128,7 +132,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                             },
                       ),
                       Text(
-                        "Total: ${ds["total"]}",
+                        "Tổng: ${ds["total"]}",
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
                        Text("Phương thức thanh toán: ${ds["paymentMethod"]}",

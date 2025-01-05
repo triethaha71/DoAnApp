@@ -90,8 +90,9 @@ class _SignupState extends State<Signup> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                    Color( 0xFF64B5F6),
+                        
                     Color(0xFF1e3c72),
+                    Color( 0xFF64B5F6),
                   ])),
             ),
             Container(

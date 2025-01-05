@@ -175,7 +175,7 @@ class _WalletState extends State<Wallet> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF008080),
+                        color: const Color(0xFF1e3c72),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Center(

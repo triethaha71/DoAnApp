@@ -112,41 +112,39 @@ class _HomeState extends State<Home> {
                             const SizedBox(
                               width: 20.0,
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2,
-                                    child: Text(
-                                      ds["Name"],
-                                      style:
-                                          AppWidget.semiBooldTextFeildStyle(),
-                                    )),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2,
-                                    child: Text(
-                                      "Honney goot cheese",
-                                      style:
-                                          AppWidget.LightTextFeildStyle(),
-                                    )),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2,
-                                    child: Text(
-                                      currencyFormat.format(
-                                        int.tryParse(ds["Price"] ?? "0") ?? 0,
-                                      ),
-                                      style:
-                                          AppWidget.semiBooldTextFeildStyle(),
-                                    )),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    ds["Name"],
+                                    style: AppWidget.semiBooldTextFeildStyle(),
+                                  ),
+                                  const SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Text(
+                                    "Honney goot cheese",
+                                    style: AppWidget.LightTextFeildStyle(),
+                                  ),
+                                  const SizedBox(
+                                    height: 5.0,
+                                  ),
+                                 Row(
+                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                   children: [
+                                      Text(
+                                       currencyFormat.format(
+                                         int.tryParse(ds["Price"] ?? "0") ?? 0,
+                                       ),
+                                       style: AppWidget.semiBooldTextFeildStyle(),
+                                     ),
+                                     // Rating
+                                     _buildRating(ds["Name"]),
+                                   ],
+                                 )
+                                ],
+                              ),
                             )
                           ],
                         ),
@@ -219,10 +217,18 @@ class _HomeState extends State<Home> {
                             const SizedBox(
                               height: 5.0,
                             ),
-                            Text(
-                              currencyFormat.format(
-                                  int.tryParse(ds["Price"] ?? "0") ?? 0),
-                              style: AppWidget.semiBooldTextFeildStyle(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  currencyFormat.format(
+                                      int.tryParse(ds["Price"] ?? "0") ?? 0),
+                                  style: AppWidget.semiBooldTextFeildStyle(),
+                                ),
+                                SizedBox(width: 20,),
+                                // Rating
+                                _buildRating(ds["Name"]),
+                              ],
                             )
                           ],
                         ),
@@ -233,6 +239,44 @@ class _HomeState extends State<Home> {
               });
         });
   }
+
+    Widget _buildRating(String foodName) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('food_reviews').doc(foodName).collection('reviews').snapshots(),
+        builder: (context, snapshot) {
+          if(snapshot.hasError){
+            return const SizedBox(); // Return an empty widget if have error
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const SizedBox(); // Return an empty widget if no data available yet
+          }
+            final reviews = snapshot.data!.docs;
+          double averageRating = 0;
+
+              for (var review in reviews) {
+                var reviewData = review.data() as Map<String, dynamic>;
+                averageRating += (reviewData['rating'] as num).toDouble();
+              }
+            if (reviews.isNotEmpty) {
+              averageRating = averageRating / reviews.length;
+            }
+           String rating = averageRating.toStringAsFixed(1);
+
+          return  Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            const Icon(Icons.star, color: Colors.orange, size: 18,),
+              const SizedBox(width: 2,),
+              Text(rating,
+              style: const TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold))
+
+            ],
+          );
+
+        }
+      );
+    }
 
   @override
   Widget build(BuildContext context) {

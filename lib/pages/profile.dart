@@ -103,7 +103,7 @@ class _ProfileState extends State<Profile> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Color.fromARGB(255, 11, 156, 85),
             content: Text(
-              "Profile image has been updated successfully",
+              "Tải hình lên thành công",
               style: TextStyle(fontSize: 18.0),
             )));
       } else {
@@ -151,11 +151,18 @@ class _ProfileState extends State<Profile> {
           Stack(
             children: [
               Container(
-                padding: const EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
+                padding:
+                    const EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
                 height: MediaQuery.of(context).size.height / 4.3,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Colors.black,
+                    gradient: const LinearGradient(
+                      colors: [
+                        
+                        Color(0xFF1e3c72),
+                        Color(0xFF64B5F6),
+                      ],
+                    ),
                     borderRadius: BorderRadius.vertical(
                         bottom: Radius.elliptical(
                             MediaQuery.of(context).size.width, 105.0))),
@@ -336,7 +343,8 @@ class _ProfileState extends State<Profile> {
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Lỗi: Không thể xác định thông tin người dùng.")));
+                    content:
+                        Text("Lỗi: Không thể xác định thông tin người dùng.")));
               }
             },
             child: Container(
@@ -456,10 +464,10 @@ class _ProfileState extends State<Profile> {
                       ],
                     );
                   }).then((value) {
-                  if (value == true){
-                        AuthMethods().deleteuser(context);
-                    }
-               });
+                if (value == true) {
+                  AuthMethods().deleteuser(context);
+                }
+              });
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -508,7 +516,7 @@ class _ProfileState extends State<Profile> {
             onTap: () {
               print('ProfilePage: log out button tapped');
               AuthMethods().SignOut(context);
-                print('ProfilePage: AuthMethods().signOut() called');
+              print('ProfilePage: AuthMethods().signOut() called');
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20.0),
