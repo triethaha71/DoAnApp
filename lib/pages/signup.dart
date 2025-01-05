@@ -31,8 +31,8 @@ class _SignupState extends State<Signup> {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
-        ScaffoldMessenger.of(context).showSnackBar((SnackBar(
-            backgroundColor: const Color.fromARGB(255, 5, 157, 83),
+        ScaffoldMessenger.of(context).showSnackBar((const SnackBar(
+            backgroundColor: Color.fromARGB(255, 5, 157, 83),
             content: Text(
               "Đăng ký thành công",
               style: TextStyle(fontSize: 20.0),
@@ -54,17 +54,17 @@ class _SignupState extends State<Signup> {
 
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Bottomnav()));
+            context, MaterialPageRoute(builder: (context) => const Bottomnav()));
       } on FirebaseException catch (e) {
         if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
                 "Mật khẩu cung cấp quá yếu",
                 style: TextStyle(fontSize: 18.0),
               )));
         } else if (e.code == "email đang được sử dụng") {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
                 "Tài khoản đã tồn tại",
@@ -85,13 +85,13 @@ class _SignupState extends State<Signup> {
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                    Color(0xFFff5c30),
-                    Color(0xFFe74b1a),
+                    Color( 0xFF64B5F6),
+                    Color(0xFF1e3c72),
                   ])),
             ),
             Container(
@@ -99,31 +99,31 @@ class _SignupState extends State<Signup> {
                   EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40))),
-              child: Text(""),
+              child: const Text(""),
             ),
             Container(
-              margin: EdgeInsets.only(top: 60.0, left: 20, right: 20),
+              margin: const EdgeInsets.only(top: 60.0, left: 20, right: 20),
               child: Column(
                 children: [
                   Center(
                       child: Image.asset(
                     "images/logo.png",
-                    width: MediaQuery.of(context).size.width / 1.5,
+                    width: MediaQuery.of(context).size.width / 2,
                     fit: BoxFit.cover,
                   )),
-                  SizedBox(
+                  const SizedBox(
                     height: 50.0,
                   ),
                   Material(
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height / 1.8,
                       decoration: BoxDecoration(
@@ -133,14 +133,14 @@ class _SignupState extends State<Signup> {
                         key: _formkey,
                         child: Column(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               height: 30.0,
                             ),
                             Text(
                               "Đăng ký",
                               style: AppWidget.HeadlineTextFeildStyle(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 30.0,
                             ),
                             TextFormField(
@@ -155,9 +155,9 @@ class _SignupState extends State<Signup> {
                                   hintText: 'Họ và tên',
                                   hintStyle:
                                       AppWidget.semiBooldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.person_outlined)),
+                                  prefixIcon: const Icon(Icons.person_outlined)),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 30.0,
                             ),
                             TextFormField(
@@ -166,9 +166,9 @@ class _SignupState extends State<Signup> {
                                   hintText: 'Email',
                                   hintStyle:
                                       AppWidget.semiBooldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.email_outlined)),
+                                  prefixIcon: const Icon(Icons.email_outlined)),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 30.0,
                             ),
                             TextFormField(
@@ -184,10 +184,10 @@ class _SignupState extends State<Signup> {
                                   hintText: 'Mật khẩu',
                                   hintStyle:
                                       AppWidget.semiBooldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.password_outlined)),
+                                  prefixIcon: const Icon(Icons.password_outlined)),
                             ),
-                            SizedBox(
-                              height: 80.0,
+                            const SizedBox(
+                              height: 50.0,
                             ),
                             GestureDetector(
                               onTap: () async {
@@ -204,13 +204,13 @@ class _SignupState extends State<Signup> {
                                 elevation: 5.0,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
                                   width: 200,
                                   decoration: BoxDecoration(
-                                    color: Color(0xffff5722),
+                                    color: const Color(0xFF1e3c72),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: Center(
+                                  child: const Center(
                                       child: Text(
                                     "Đăng kí",
                                     style: TextStyle(
@@ -227,13 +227,13 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 70.0,
+                  const SizedBox(
+                    height: 40.0,
                   ),
                   GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
+                            MaterialPageRoute(builder: (context) => const Login()));
                       },
                       child: Text(
                         "Bạn đã có tài khoản? Đăng nhập ",

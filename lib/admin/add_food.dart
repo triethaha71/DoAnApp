@@ -71,7 +71,7 @@ class _AddFoodState extends State<AddFood> {
         pricecontroller.text != "" &&
         detailcontroller.text != "") {
       if (value == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
               "Please select a category",
@@ -94,10 +94,10 @@ class _AddFoodState extends State<AddFood> {
         };
 
         await DatabaseMethods().AddFoodItem(addItem, value!).then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: const Color.fromARGB(255, 11, 156, 85),
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Color.fromARGB(255, 11, 156, 85),
               content: Text(
-                "Food item has been added successfully",
+                "Đã thêm món ăn thành công",
                 style: TextStyle(fontSize: 18.0),
               )));
           setState(() {
@@ -108,15 +108,15 @@ class _AddFoodState extends State<AddFood> {
             value = null;
           });
         }).catchError((e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.red,
               content: Text(
-                "Failed to add food item",
+                "Không thể thêm món ăn",
                 style: TextStyle(fontSize: 18.0),
               )));
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
               "Failed to upload image",
@@ -124,7 +124,7 @@ class _AddFoodState extends State<AddFood> {
             )));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
             "Please fill in all fields",
@@ -141,7 +141,7 @@ class _AddFoodState extends State<AddFood> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios_new_outlined,
               color: Color(0xFF373866),
             )),
@@ -154,7 +154,7 @@ class _AddFoodState extends State<AddFood> {
       body: SingleChildScrollView(
         child: Container(
           margin:
-              EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
+              const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -162,7 +162,7 @@ class _AddFoodState extends State<AddFood> {
                 "Tải hình ảnh lên",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               selectedImage == null
@@ -182,7 +182,7 @@ class _AddFoodState extends State<AddFood> {
                                   Border.all(color: Colors.black, width: 1.5),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.camera_alt_outlined,
                               color: Colors.black,
                             ),
@@ -211,21 +211,21 @@ class _AddFoodState extends State<AddFood> {
                         ),
                       ),
                     ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Tên món ăn",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
@@ -236,21 +236,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Giá",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
@@ -261,21 +261,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Mô tả",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
@@ -287,21 +287,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Text(
                 "Chọn danh mục",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -311,23 +311,23 @@ class _AddFoodState extends State<AddFood> {
                           child: Text(
                             item,
                             style:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
+                                const TextStyle(fontSize: 18.0, color: Colors.black),
                           )))
                       .toList(),
                   onChanged: ((value) => setState(() {
                         this.value = value;
                       })),
                   dropdownColor: Colors.white,
-                  hint: Text("danh mục"),
+                  hint: const Text("danh mục"),
                   iconSize: 36,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_drop_down,
                     color: Colors.black,
                   ),
                   value: value,
                 )),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               GestureDetector(
@@ -339,13 +339,13 @@ class _AddFoodState extends State<AddFood> {
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
                       width: 150,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           "Thêm",
                           style: TextStyle(

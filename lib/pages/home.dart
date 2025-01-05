@@ -91,12 +91,12 @@ class _HomeState extends State<Home> {
                                 image: ds["Image"])));
                   },
                   child: Container(
-                    margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
+                    margin: const EdgeInsets.only(right: 20.0, bottom: 20.0),
                     child: Material(
                       elevation: 5.0,
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -109,7 +109,7 @@ class _HomeState extends State<Home> {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 20.0,
                             ),
                             Column(
@@ -122,7 +122,7 @@ class _HomeState extends State<Home> {
                                       style:
                                           AppWidget.semiBooldTextFeildStyle(),
                                     )),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5.0,
                                 ),
                                 Container(
@@ -133,7 +133,7 @@ class _HomeState extends State<Home> {
                                       style:
                                           AppWidget.LightTextFeildStyle(),
                                     )),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5.0,
                                 ),
                                 Container(
@@ -187,12 +187,12 @@ class _HomeState extends State<Home> {
                                 image: ds["Image"])));
                   },
                   child: Container(
-                    margin: EdgeInsets.all(4),
+                    margin: const EdgeInsets.all(4),
                     child: Material(
                       elevation: 5.0,
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -209,14 +209,14 @@ class _HomeState extends State<Home> {
                               ds["Name"],
                               style: AppWidget.semiBooldTextFeildStyle(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
                             Text(
                               "Fresh and Healthy",
                               style: AppWidget.LightTextFeildStyle(),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
                             Text(
@@ -239,7 +239,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 50.0, left: 20.0),
+          margin: const EdgeInsets.only(top: 50.0, left: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -256,12 +256,12 @@ class _HomeState extends State<Home> {
                       );
                     },
                     child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      padding: EdgeInsets.all(3),
+                      margin: const EdgeInsets.only(right: 20.0),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(8)),
-                      child: Icon(
+                      child: const Icon(
                         Icons.shopping_cart,
                         color: Colors.white,
                       ),
@@ -269,13 +269,13 @@ class _HomeState extends State<Home> {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Text("Món ăn ngon!", style: AppWidget.HeadlineTextFeildStyle()),
               Text("Khám phá và nhận được những món ăn tuyệt vời",
                   style: AppWidget.LightTextFeildStyle()),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Padding(
@@ -289,7 +289,7 @@ class _HomeState extends State<Home> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Tìm kiếm món ăn...',
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.search,
                       color: Colors.grey,
                     ),
@@ -298,16 +298,16 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               Container(
-                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
-              SizedBox(
+                  margin: const EdgeInsets.only(right: 20.0), child: showItem()),
+              const SizedBox(
                 height: 30.0,
               ),
               Container(height: 270, child: allItems()),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               allItemsVertically(),
@@ -338,7 +338,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: icecream ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/ice-cream.png",
                 height: 40,
@@ -365,7 +365,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: pizza ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/pizza.png",
                 height: 40,
@@ -392,7 +392,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: salad ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/salad.png",
                 height: 40,
@@ -419,7 +419,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: burger ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/burger.png",
                 height: 40,

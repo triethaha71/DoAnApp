@@ -92,9 +92,9 @@ class _EditFoodState extends State<EditFood> {
         pricecontroller.text != "" &&
         detailcontroller.text != "") {
       if (value == null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
-            content: Text(
+            content: const Text(
               "Please select a category",
               style: TextStyle(fontSize: 18.0),
             )));
@@ -126,7 +126,7 @@ class _EditFoodState extends State<EditFood> {
               )));
           Navigator.pop(context);
         }catch (e){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.red,
               content: Text(
                 "Failed to update food item",
@@ -134,7 +134,7 @@ class _EditFoodState extends State<EditFood> {
               )));
         }
       }  else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
               "Failed to upload image",
@@ -143,7 +143,7 @@ class _EditFoodState extends State<EditFood> {
       }
 
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
             "Please fill in all fields",
@@ -160,28 +160,28 @@ class _EditFoodState extends State<EditFood> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios_new_outlined,
               color: Color(0xFF373866),
             )),
         centerTitle: true,
         title: Text(
-          "Edit Item",
+          "Sửa thông tin",
           style: AppWidget.HeadlineTextFeildStyle(),
         ),
       ),
       body: SingleChildScrollView(
         child: Container(
           margin:
-          EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
+          const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Upload the item picture",
+                "Tải ảnh lên",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               selectedImage == null ?
@@ -202,7 +202,7 @@ class _EditFoodState extends State<EditFood> {
                         Border.all(color: Colors.black, width: 1.5),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.camera_alt_outlined,
                         color: Colors.black,
                       ),
@@ -258,71 +258,71 @@ class _EditFoodState extends State<EditFood> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
-                "Item Name",
+                "Tên món ăn",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
                   controller: namecontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter item name",
+                      //hintText: "Enter item name",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
-                "Item Price",
+                "Giá",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
                   controller: pricecontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter item price",
+                      //hintText: "Enter item price",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
-                "Item Detail",
+                "Chi tiết món ăn",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(0xFFececf8),
+                  color: const Color(0xFFececf8),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextField(
@@ -330,25 +330,25 @@ class _EditFoodState extends State<EditFood> {
                   controller: detailcontroller,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter item detail",
+                     // hintText: "Enter item detail",
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Text(
-                "Select Category",
+                "Chọn danh mục",
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -358,23 +358,23 @@ class _EditFoodState extends State<EditFood> {
                           child: Text(
                             item,
                             style:
-                            TextStyle(fontSize: 18.0, color: Colors.black),
+                            const TextStyle(fontSize: 18.0, color: Colors.black),
                           )))
                           .toList(),
                       onChanged: ((value) => setState(() {
                         this.value = value;
                       })),
                       dropdownColor: Colors.white,
-                      hint: Text("Select Category"),
+                      hint: const Text("danh mục"),
                       iconSize: 36,
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_drop_down,
                         color: Colors.black,
                       ),
                       value: value,
                     )),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               GestureDetector(
@@ -386,15 +386,15 @@ class _EditFoodState extends State<EditFood> {
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
                       width: 150,
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
-                          "Update",
+                          "Xác nhận",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 22.0,
