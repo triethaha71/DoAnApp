@@ -49,17 +49,18 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           print("OrderHistoryPage: StreamBuilder - Error: ${snapshot.error}");
           return const Center(child: Text("Error loading order history"));
         }
-          print("OrderHistoryPage: StreamBuilder - Data available - ${snapshot.data!.docs.length} document(s)");
-         final orderDocs = snapshot.data!.docs;
+        print("OrderHistoryPage: StreamBuilder - Data available - ${snapshot.data!.docs.length} document(s)");
+        final orderDocs = snapshot.data!.docs;
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: orderDocs.length,
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
-               print("OrderHistoryPage: ListView.builder - Processing order at index $index");
-             final ds = orderDocs[index];
-              final List<dynamic> items = ds["items"] as List;
+            print("OrderHistoryPage: ListView.builder - Processing order at index $index");
+            final ds = orderDocs[index];
+            final List<dynamic> items = ds["items"] as List;
+            final String deliveryAddress = (ds.data() as Map<String, dynamic>)["deliveryAddress"] as String? ?? "Không có địa chỉ giao hàng";
             return Container(
               margin:
                   const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
@@ -77,67 +78,88 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                         "Hóa đơn",
                         style: AppWidget.semiBooldTextFeildStyle(),
                       ),
-                        ListView.builder(
-                          padding: EdgeInsets.zero,
-                          itemCount: items.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index1) {
-                            print("OrderHistoryPage: ListView.builder(items) - index1 : $index1");
-                           final item = items[index1];
-                             //Get Quantity here
-                             String quantity = item["Quanlity"] ?? "0";
-                              int price = int.tryParse(item['Price'] ?? "0") ?? 0;
-                              return Container(
-                                margin: const EdgeInsets.only(top: 5.0),
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(60),
-                                      child: Image.network(
-                                        item['Image'],
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 20.0),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                           Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                              Text(item["Name"] ?? "Tên không có",
-                                                  style:
-                                                      AppWidget.semiBooldTextFeildStyle()),
-                                                    Text(
-                                                    "x$quantity",
-                                                    style: AppWidget.semiBooldTextFeildStyle(),
-                                                  ),
-                                              ]
-                                          ),
-                                              Text(
-                                                  currencyFormat.format(price * (int.tryParse(quantity) ?? 1)),
-                                                  style: AppWidget.LightTextFeildStyle()
-                                              ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                      ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: items.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index1) {
+                          print("OrderHistoryPage: ListView.builder(items) - index1 : $index1");
+                          final item = items[index1];
+                          //Get Quantity here
+                          String quantity = item["Quanlity"] ?? "0";
+                          int price = int.tryParse(item['Price'] ?? "0") ?? 0;
+                          return Container(
+                            margin: const EdgeInsets.only(top: 5.0),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(60),
+                                  child: Image.network(
+                                    item['Image'],
+                                    height: 50,
+                                    width: 50,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              );
-                            },
+                                const SizedBox(width: 20.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(item["Name"] ?? "Tên không có",
+                                              style:
+                                                  AppWidget.semiBooldTextFeildStyle()),
+                                          Text(
+                                            "x$quantity",
+                                            style: AppWidget.semiBooldTextFeildStyle(),
+                                          ),
+                                        ]
+                                      ),
+                                      Text(
+                                          currencyFormat.format(price * (int.tryParse(quantity) ?? 1)),
+                                          style: AppWidget.LightTextFeildStyle()
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      Text(
-                        "Tổng: ${ds["total"]}",
-                        style: AppWidget.semiBooldTextFeildStyle(),
+                       RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(text: 'Tổng: ', style: AppWidget.semiBooldTextFeildStyle()),
+                              TextSpan(text: '${ds["total"]}', style:  AppWidget.LightTextFeildStyle()),
+                            ],
+                          ),
+                        ),
+                      RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(text: 'Địa chỉ giao hàng: ', style: AppWidget.semiBooldTextFeildStyle()),
+                            TextSpan(text: deliveryAddress, style: AppWidget.LightTextFeildStyle()),
+                          ],
+                        ),
                       ),
-                       Text("Phương thức thanh toán: ${ds["paymentMethod"]}",
-                        style: AppWidget.semiBooldTextFeildStyle(),
-                      ),
+                       RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(text: 'Phương thức thanh toán: ', style: AppWidget.semiBooldTextFeildStyle()),
+                              TextSpan(text: '${ds["paymentMethod"]}', style: AppWidget.LightTextFeildStyle()),
+                            ],
+                          ),
+                        ),
+                      
                     ],
                   ),
                 ),

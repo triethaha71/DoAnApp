@@ -82,7 +82,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                               controller: mailcontroller,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter email';
+                                  return 'Vui lòng nhập email';
                                 }
                                 return null;
                               },
@@ -151,7 +151,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                                           builder: (context) => const Signup()));
                                 },
                                 child: const Text(
-                                  "Create",
+                                  "Đăng ký",
                                   style: TextStyle(
                                     color: Color.fromARGB(255, 184, 166, 6),
                                     fontSize: 20.0,

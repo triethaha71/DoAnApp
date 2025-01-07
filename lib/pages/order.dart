@@ -102,7 +102,7 @@ class _OrderState extends State<Order> {
           "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
     } catch (e) {
       print('OrderPage: Error updating quantity $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text("Error updating quantity")));
     }
@@ -121,7 +121,7 @@ class _OrderState extends State<Order> {
           'OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
     } catch (e) {
       print('OrderPage: Error deleting item $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text("Error deleting item")));
     }
@@ -172,8 +172,8 @@ class _OrderState extends State<Order> {
                       background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20.0),
-                          child: Icon(Icons.delete, color: Colors.white)),
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: const Icon(Icons.delete, color: Colors.white)),
                       onDismissed: (direction) {
                         _deleteCartItem(ds);
                       },
@@ -208,7 +208,7 @@ class _OrderState extends State<Order> {
                                       const EdgeInsets.symmetric(horizontal: 10.0),
                                       child: Text(
                                         ds["Quanlity"] ?? '1',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 20, fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -329,7 +329,7 @@ class _OrderState extends State<Order> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFF1e3c72),
+                    color: const Color(0xFF1e3c72),
                     borderRadius: BorderRadius.circular(10)),
                 margin:
                     const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0),

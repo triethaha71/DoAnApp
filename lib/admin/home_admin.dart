@@ -1,6 +1,7 @@
 import 'package:appdatfood/admin/add_food.dart';
 import 'package:appdatfood/admin/admin_login.dart';
 import 'package:appdatfood/admin/edit_food.dart';
+import 'package:appdatfood/admin/statistics_screen.dart';
 import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/widget/widget_support.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,14 +17,13 @@ class HomeAdmin extends StatefulWidget {
 class _HomeAdminState extends State<HomeAdmin> {
   // List of food categories
   final List<String> foodCategories = ['Ice-cream', 'Burger', 'Salad', 'Pizza'];
- final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -51,7 +51,7 @@ class _HomeAdminState extends State<HomeAdmin> {
               },
               child: Material(
                 elevation: 10.0,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(4),
@@ -64,7 +64,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                         Padding(
                           padding: const EdgeInsets.all(6.0),
                           child: Image.asset(
-                            "images/food.jpg",
+                            "images/food1.png",
                             height: 100,
                             width: 100,
                             fit: BoxFit.cover,
@@ -72,7 +72,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                         ),
                         const SizedBox(width: 30.0),
                         const Text(
-                          "Thêm sản phẩm",
+                          "Thêm món ăn",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 20.0,
@@ -84,22 +84,97 @@ class _HomeAdminState extends State<HomeAdmin> {
                 ),
               ),
             ),
-            const SizedBox(height: 20.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: foodCategories.length,
-                itemBuilder: (context, index) {
-                  return _buildCategoryCard(foodCategories[index]);
-                },
+            const SizedBox(height: 30.0),
+            GestureDetector(
+              onTap: () {
+                 Navigator.push(
+                    context, MaterialPageRoute(builder: (context) =>  ChangeFoodScreen()));
+                
+              },
+              child: Material(
+                elevation: 10.0,
+                borderRadius: BorderRadius.circular(20),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 60, 97, 164),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Image.asset(
+                            "images/food2.jpg",
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: 30.0),
+                        const Text(
+                          "Thay đổi món ăn",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
+            const SizedBox(height: 30.0),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => StatisticsScreen()));
+              },
+              child: Material(
+                elevation: 10.0,
+                borderRadius: BorderRadius.circular(20),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 60, 97, 164),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Image.asset(
+                            "images/food3.png",
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: 30.0),
+                        const Text(
+                          "Thống kê",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+           
           ],
         ),
       ),
     );
   }
 
-   void _logout(BuildContext context) {
+  void _logout(BuildContext context) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const AdminLogin()),
@@ -107,6 +182,45 @@ class _HomeAdminState extends State<HomeAdmin> {
   }
 
 
+}
+
+
+class ChangeFoodScreen extends StatelessWidget {
+  ChangeFoodScreen({super.key});
+
+   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(title: Center(child: const Text("Chọn món thay đổi", style: TextStyle(fontWeight: FontWeight.bold),))),
+        body: Container(
+          margin: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20.0,),
+           Expanded(child: ListView.builder(
+              itemCount:  4,
+              itemBuilder: (context, index) {
+               final String categoryName;
+                  switch(index){
+                    case 0: categoryName="Ice-cream"; break;
+                    case 1: categoryName="Burger";break;
+                     case 2: categoryName="Salad";break;
+                     case 3: categoryName="Pizza";break;
+                     default: categoryName = "Ice-cream";
+                  }
+                return  _buildCategoryCard(categoryName);
+              }
+            ),
+           ),
+        ],
+      ),
+    )
+    );
+  }
+  
   Widget _buildCategoryCard(String category) {
     return Card(
       elevation: 4,
@@ -154,7 +268,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                     Map<String, dynamic> foodItemData =
                         document.data() as Map<String, dynamic>;
                     return _buildFoodItemCard(
-                        document.id, foodItemData, category);
+                        document.id, foodItemData, category, context);
                   },
                 );
               },
@@ -164,9 +278,8 @@ class _HomeAdminState extends State<HomeAdmin> {
       ),
     );
   }
-
-  Widget _buildFoodItemCard(
-      String documentId, Map<String, dynamic> foodItemData, String category) {
+   Widget _buildFoodItemCard(
+      String documentId, Map<String, dynamic> foodItemData, String category, BuildContext context) {
     return Card(
         elevation: 3.0,
         child: Padding(
@@ -202,31 +315,31 @@ class _HomeAdminState extends State<HomeAdmin> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+             Row(
+               mainAxisAlignment: MainAxisAlignment.center,
+               children: [
+                 IconButton(
+                       icon: const Icon(Icons.edit, color: Colors.blue),
+                       onPressed: () {
+                           _navigateToEditScreen(documentId, foodItemData, category, context);
+                       },
+                     ),
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () {
-                      _navigateToEditScreen(documentId, foodItemData, category);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      _deleteFoodItem(documentId, category);
-                    },
-                  ),
-                ],
-              )
+                     icon: const Icon(Icons.delete, color: Colors.red),
+                     onPressed: () {
+                       _deleteFoodItem(documentId, category, context);
+                     },
+                   ),
+               ],
+             )
             ],
           ),
         )
     );
   }
-
+  
   void _navigateToEditScreen(
-      String documentId, Map<String, dynamic> foodItemData, String category) {
+      String documentId, Map<String, dynamic> foodItemData, String category, BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -236,13 +349,13 @@ class _HomeAdminState extends State<HomeAdmin> {
                 category: category)));
   }
 
-  void _deleteFoodItem(String documentId, String category) async {
+    void _deleteFoodItem(String documentId, String category, BuildContext context) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Center(child: const Text("Xóa món ăn")),
-          content: const Text("Bạn có chăc muốn xóa không"),
+          content: const Text("Bạn có chắc muốn xóa không"),
           actions: <Widget>[
             TextButton(
               child: const Text("Không"),
@@ -274,4 +387,4 @@ class _HomeAdminState extends State<HomeAdmin> {
       },
     );
   }
-}
+} 

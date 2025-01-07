@@ -8,11 +8,11 @@ class UnboardingContent {
 
 List<UnboardingContent> contents = [
   UnboardingContent(
-      desciption: 'Chọn món ăn của bạn theo thực đơn\n                  Hơn 35 loại món ăn',
+      desciption: 'Chọn món ăn của bạn theo thực đơn\n  Nhiều loại món ăn',
       images: "images/screen1.png",
       title: '    Menu chất lượng'),
   UnboardingContent(
-      desciption: 'Bạn có thể thanh toán khi nhận hàng và\n                    thanh toán bằng thẻ',
+      desciption: 'Bạn có thể thanh toán khi nhận hàng và\n   thanh toán bằng thẻ',
       images: "images/screen2.png",
       title: 'Thanh toán dễ dàng và trực tuyến'),
   UnboardingContent(

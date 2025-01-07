@@ -103,7 +103,7 @@ class _AdminLoginState extends State<AdminLogin> {
                             icon: Icons.person_outline,
                              validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please Enter Username';
+                                    return 'Vui lòng nhập tài khoản';
                                   }
                                   return null;
                                 },
@@ -128,7 +128,7 @@ class _AdminLoginState extends State<AdminLogin> {
                                 ),
                              validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please Enter Password';
+                                    return 'Vui lòng nhập mật khẩu';
                                   }
                                   return null;
                                 },

@@ -124,7 +124,7 @@ class _HomeState extends State<Home> {
                                     height: 5.0,
                                   ),
                                   Text(
-                                    "Honney goot cheese",
+                                    "Healthy và Clean",
                                     style: AppWidget.LightTextFeildStyle(),
                                   ),
                                   const SizedBox(
@@ -211,7 +211,7 @@ class _HomeState extends State<Home> {
                               height: 5.0,
                             ),
                             Text(
-                              "Fresh and Healthy",
+                              "Fresh và Healthy",
                               style: AppWidget.LightTextFeildStyle(),
                             ),
                             const SizedBox(
@@ -303,7 +303,7 @@ class _HomeState extends State<Home> {
                       margin: const EdgeInsets.only(right: 20.0),
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: Color.fromARGB(255, 60, 97, 164),
                           borderRadius: BorderRadius.circular(8)),
                       child: const Icon(
                         Icons.shopping_cart,
