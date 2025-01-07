@@ -27,6 +27,14 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
   String? selectedPaymentMethod;
   final currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
+  final _addressController = TextEditingController();
+  bool _addressEntered = false;
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,24 +53,34 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: ListView.separated(
-                itemCount: widget.cartItems.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final item = widget.cartItems[index];
-                  return _buildCartItemCard(item);
-                },
-              ),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: widget.cartItems.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final item = widget.cartItems[index];
+                return _buildCartItemCard(item);
+              },
             ),
             const SizedBox(height: 16.0),
             _buildTotalSection(),
             const SizedBox(height: 24.0),
+             Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Text(
+                'Nhập địa chỉ giao hàng:',
+                style: AppWidget.semiBooldTextFeildStyle(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildAddressInput(),
+           const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.only(left: 4.0),
               child: Text(
@@ -70,9 +88,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
                 style: AppWidget.semiBooldTextFeildStyle(),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+           const SizedBox(height: 10),
             _buildPaymentOptions(),
             const SizedBox(height: 20),
             _buildPaymentButton(),
@@ -81,6 +97,33 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       ),
     );
   }
+
+
+   Widget _buildAddressInput() {
+    return  Padding(
+        padding: const EdgeInsets.only(bottom: 12.0),
+        child: TextField(
+              controller: _addressController,
+              onChanged: (value) {
+                setState(() {
+                  _addressEntered = value.isNotEmpty;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Địa chỉ giao hàng',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: const BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: const BorderSide(color: Color(0xFF1e3c72), width: 2.0),
+                ),
+              ),
+            ),
+      );
+  }
+
 
   Widget _buildCartItemCard(DocumentSnapshot item) {
     int price = int.tryParse(item["Price"] ?? "0") ?? 0;
@@ -106,19 +149,19 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Row(
+                  Row(
                     children: [
                       Expanded(
-                      child: Text(
-                       item['Name'],
-                       style: AppWidget.semiBooldTextFeildStyle(),
-                      ),
+                        child: Text(
+                          item['Name'],
+                          style: AppWidget.semiBooldTextFeildStyle(),
+                        ),
                       ),
                       Align(
-                       alignment: Alignment.centerRight,
+                        alignment: Alignment.centerRight,
                         child: Text(
                           'x$quantity',
-                         style: AppWidget.semiBooldTextFeildStyle(),
+                          style: AppWidget.semiBooldTextFeildStyle(),
                         ),
                       )
                     ],
@@ -159,13 +202,13 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
           title: const Text('Thanh toán bằng ví'),
           value: 'wallet',
           groupValue: selectedPaymentMethod,
-          onChanged: (value) => _updatePaymentMethod(value),
+          onChanged:  (value) => _updatePaymentMethod(value)
         ),
         RadioListTile<String>(
           title: const Text('Thanh toán khi nhận hàng'),
           value: 'cod',
           groupValue: selectedPaymentMethod,
-          onChanged: (value) => _updatePaymentMethod(value),
+           onChanged:   (value) => _updatePaymentMethod(value)
         ),
       ],
     );
@@ -182,7 +225,9 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: selectedPaymentMethod == null ? null : _processPayment,
+          onPressed: selectedPaymentMethod == null || !_addressEntered
+              ? null
+              : () => _processPayment(),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF1e3c72),
             foregroundColor: Colors.white,
@@ -200,46 +245,51 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
     );
   }
 
-  Future<void> _processPayment() async {
+   Future<void> _processPayment() async {
     print(
         "PaymentOptionsPage: _processPayment called, selectedPaymentMethod: $selectedPaymentMethod");
     String message;
-    if (selectedPaymentMethod == 'wallet') {
-      int walletAmount = int.parse(widget.wallet);
+      if (selectedPaymentMethod == 'wallet') {
+         int walletAmount = int.parse(widget.wallet);
       if (walletAmount < widget.total) {
         message = "Số tiền trong ví không đủ!";
         print(
             "PaymentOptionsPage: _processPayment - Wallet insufficient: walletAmount=$walletAmount, total=${widget.total}");
-      } else {
-        int amount = walletAmount - widget.total;
-        print(
+      }else{
+           int amount = walletAmount - widget.total;
+         print(
             "PaymentOptionsPage: _processPayment - Wallet payment processing: previousWallet=$walletAmount, total=${widget.total}, newWallet=$amount");
         await DatabaseMethods()
             .UpdateUserwallet(widget.userId, amount.toString());
         await SharedPreferenceHelper().saveUserWallet(amount.toString());
-        print(
+         print(
             "PaymentOptionsPage: _processPayment - Wallet updated, calling _saveOrderHistory and clearCart");
-        // Lưu thông tin order vào Firestore
+          // Lưu thông tin order vào Firestore
         await _saveOrderHistory();
-
         await DatabaseMethods().clearCart(widget.userId);
         Navigator.pop(context);
-        message = "Thanh toán thành công bằng ví!";
+         message = "Thanh toán thành công bằng ví!";
       }
-    } else {
-      print(
+
+    } else if(selectedPaymentMethod == 'cod' && _addressController.text.isNotEmpty){
+         print(
           "PaymentOptionsPage: _processPayment - COD payment processing, calling _saveOrderHistory and clearCart");
       // Lưu thông tin order vào Firestore
-      await _saveOrderHistory();
+        await _saveOrderHistory();
       await DatabaseMethods().clearCart(widget.userId);
        Navigator.pop(context);
-      message = "Thanh toán khi nhận hàng thành công";
+       message = "Thanh toán khi nhận hàng thành công";
     }
-    print("PaymentOptionsPage: _processPayment - Payment completed, message: $message");
+     else {
+          message = "Vui lòng chọn phương thức thanh toán và nhập địa chỉ (nếu cần)";
+    }
+     print("PaymentOptionsPage: _processPayment - Payment completed, message: $message");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
+
+
 
   Future<void> _saveOrderHistory() async {
     print("PaymentOptionsPage: _saveOrderHistory called");
@@ -253,7 +303,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
         'Total': currencyFormat.format(price * quantity),
         'Image': item['Image'],
         'Quanlity' : (item['Quanlity'] ?? "1").toString(),
-         'Price': item['Price'],
+        'Price': item['Price'],
       };
     }).toList();
     print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
@@ -262,7 +312,8 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       items,
       currencyFormat.format(widget.total),
       selectedPaymentMethod!,
+      _addressController.text.trim(),
     );
-     print("PaymentOptionsPage: _saveOrderHistory - order history saved");
+    print("PaymentOptionsPage: _saveOrderHistory - order history saved");
   }
 }

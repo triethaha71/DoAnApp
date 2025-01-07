@@ -121,7 +121,7 @@ class _EditFoodState extends State<EditFood> {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Color.fromARGB(255, 11, 156, 85),
               content: Text(
-                "Food item has been updated successfully",
+                "Thay đổi thông tin thành công",
                 style: TextStyle(fontSize: 18.0),
               )));
           Navigator.pop(context);

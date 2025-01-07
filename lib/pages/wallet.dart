@@ -233,7 +233,7 @@ class _WalletState extends State<Wallet> {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green),
                   SizedBox(width: 10),
-                  Text("Payment Successful"),
+                  Text("Nạp tiền thành công!!"),
                 ],
               ),
             ],
@@ -351,7 +351,7 @@ class _WalletState extends State<Wallet> {
                           width: 100,
                           padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF008080),
+                            color: const Color(0xFF1e3c72),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Center(

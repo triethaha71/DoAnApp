@@ -46,20 +46,20 @@ class _BottomnavState extends State<Bottomnav> {
               currentTabIndex = index;
             });
           },
-          items: [
-            const Icon(
+          items: const [
+            Icon(
               Icons.home_outlined,
               color: Colors.white,
             ),
-            const Icon(
+            Icon(
               Icons.shopping_bag_outlined,
               color: Colors.white,
             ),
-            const Icon(
+            Icon(
               Icons.wallet_outlined,
               color: Colors.white,
             ),
-            const Icon(
+            Icon(
               Icons.person_outline,
               color: Colors.white,
             )
