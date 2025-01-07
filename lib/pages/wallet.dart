@@ -20,8 +20,9 @@ class _WalletState extends State<Wallet> {
   String? wallet, id;
   int? add;
   TextEditingController amountcontroller = TextEditingController();
-  final currencyFormat =
-      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
+  final formatCurrency = NumberFormat.currency(locale: 'en_US', symbol: '\$');
+  final formatCurrencyVND = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+
 
   getthesharedpref() async {
     wallet = await SharedPreferenceHelper().getUserWallet();
@@ -90,10 +91,27 @@ class _WalletState extends State<Wallet> {
                             const SizedBox(
                               height: 5.0,
                             ),
-                            Text(
-                              currencyFormat.format(int.tryParse(wallet ?? "0") ?? 0),
-                              style: AppWidget.boldTextFeildStyle(),
+                            Row(
+                             children: [
+                                 Text(
+                                   formatCurrency.format(int.tryParse(wallet ?? "0") ?? 0).replaceAll(".00", ""), // Remove trailing .00
+                                   style: AppWidget.boldTextFeildStyle(),
+                                 ),
+                              const SizedBox(width: 5.0),
+                              const Text(
+                                "≈",
+                                style: TextStyle(
+                                  fontSize: 15.0
+                                )
+                              ),
+                              const SizedBox(width: 5.0),
+                              Text(
+                                formatCurrencyVND.format((int.tryParse(wallet ?? "0") ?? 0) * 24000),
+                                style: AppWidget.LightTextFeildStyle(),
+                             )
+                             ],
                             )
+
                           ],
                         )
                       ],
@@ -110,11 +128,26 @@ class _WalletState extends State<Wallet> {
                     ),
                   ),
                   const SizedBox(
-                    height: 10.0,
+                    height: 30.0,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      GestureDetector(
+                        onTap: () {
+                          makePayment('50');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: const Color(0xFFE9E2E2)),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            formatCurrency.format(50).replaceAll(".00", ""),
+                            style: AppWidget.semiBooldTextFeildStyle(),
+                          ),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () {
                           makePayment('100');
@@ -125,14 +158,14 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            currencyFormat.format(100),
+                            formatCurrency.format(100).replaceAll(".00", ""),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
                       ),
                       GestureDetector(
                         onTap: () {
-                          makePayment('500');
+                           makePayment('500');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -140,14 +173,14 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            currencyFormat.format(500),
+                            formatCurrency.format(500).replaceAll(".00", ""),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
                       ),
                       GestureDetector(
                         onTap: () {
-                          makePayment('1000');
+                           makePayment('1000');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -155,16 +188,15 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            currencyFormat.format(1000),
+                            formatCurrency.format(1000).replaceAll(".00", ""),
                             style: AppWidget.semiBooldTextFeildStyle(),
                           ),
                         ),
                       ),
-                      
                     ],
                   ),
                   const SizedBox(
-                    height: 50.0,
+                    height: 30.0,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -334,6 +366,7 @@ class _WalletState extends State<Wallet> {
                           borderRadius: BorderRadius.circular(10)),
                       child: TextField(
                         controller: amountcontroller,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                             border: InputBorder.none,),
                       ),
