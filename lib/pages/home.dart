@@ -18,7 +18,7 @@ class _HomeState extends State<Home> {
   bool icecream = false, pizza = false, salad = false, burger = false;
   Stream? fooditemStream;
   String _searchQuery = '';
-  String userName = "Name"; // Default value
+  String userName = "Name"; 
   final currencyFormat =
       NumberFormat.currency(locale: 'vi_VN', symbol: 'đ', decimalDigits: 3);
 
@@ -46,12 +46,12 @@ class _HomeState extends State<Home> {
 
   // Hàm lọc danh sách món ăn
   List<DocumentSnapshot> _filterFoodItems(List<DocumentSnapshot> foodItems) {
-    print('Home: _filterFoodItems called with query "$_searchQuery"');
+    print('Trang chủ: _filterFoodItems được gọi bằng truy vấn "$_searchQuery"');
     if (_searchQuery.isEmpty) {
-      print('Home: _filterFoodItems - query is empty, returning all items');
+      print('Trang chủ: _filterFoodItems - truy vấn trống, trả về tất cả các mục');
       return foodItems;
     } else {
-      print('Home: _filterFoodItems - filtering items with query "$_searchQuery"');
+      print('Trang chủ: _filterFoodItems - lọc các mục bằng truy vấn"$_searchQuery"');
       return foodItems
           .where((item) =>
               (item['Name'] as String)
@@ -139,7 +139,7 @@ class _HomeState extends State<Home> {
                                        ),
                                        style: AppWidget.semiBooldTextFeildStyle(),
                                      ),
-                                     // Rating
+                                     // Sao đánh gia
                                      _buildRating(ds["Name"]),
                                    ],
                                  )
@@ -156,7 +156,7 @@ class _HomeState extends State<Home> {
         });
   }
 
-  //Row
+  //Hàng nagng
   Widget allItems() {
     return StreamBuilder(
         stream: fooditemStream,
@@ -245,11 +245,11 @@ class _HomeState extends State<Home> {
         stream: FirebaseFirestore.instance.collection('food_reviews').doc(foodName).collection('reviews').snapshots(),
         builder: (context, snapshot) {
           if(snapshot.hasError){
-            return const SizedBox(); // Return an empty widget if have error
+            return const SizedBox(); // Trả về nêu lõi
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const SizedBox(); // Return an empty widget if no data available yet
+            return const SizedBox(); //tra ve nếu chưa có dữ liệu
           }
             final reviews = snapshot.data!.docs;
           double averageRating = 0;

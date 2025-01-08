@@ -74,7 +74,7 @@ class _AddFoodState extends State<AddFood> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "Please select a category",
+              "Vui lòng chọn danh mục",
               style: TextStyle(fontSize: 18.0),
             )));
         return;
@@ -119,7 +119,7 @@ class _AddFoodState extends State<AddFood> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "Failed to upload image",
+              "Upload hình ảnh thất bại",
               style: TextStyle(fontSize: 18.0),
             )));
       }
@@ -127,7 +127,7 @@ class _AddFoodState extends State<AddFood> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "Please fill in all fields",
+            "Vui lòng điền đầy đủ thông tin",
             style: TextStyle(fontSize: 18.0),
           )));
     }

@@ -27,14 +27,14 @@ class _OrderState extends State<Order> {
   Future<void> getthesharedpref() async {
     id = await SharedPreferenceHelper().getUserId();
     wallet = await SharedPreferenceHelper().getUserWallet();
-    print('OrderPage: userId from shared pref: $id');
+    print('Userid được lấy từ: $id');
     if (mounted) {
       setState(() {});
     }
   }
 
   Future<void> ontheload() async {
-    print('OrderPage: ontheload called');
+    print('OrderPage: ontheload được gọi');
     await getthesharedpref();
     if (id == null) {
       print('OrderPage: Error - userId is null from shared pref');
@@ -46,17 +46,17 @@ class _OrderState extends State<Order> {
            foodStream = await DatabaseMethods().getFoodCart(id!);
         _cartSubscription = foodStream?.listen((snapshot) {
           if (snapshot != null && snapshot.docs != null) {
-               print("OrderPage: ontheload - data received from firestore, updating UI");
+               print("OrderPage: ontheload - dữ liệu được nhận từ firestore, cập nhật UI");
               setState(() {
                  cartItems = snapshot.docs;
                   _calculateTotalPrice();
               });
           }
             else {
-                  print("OrderPage: ontheload - Snapshot or snapshot.docs is null.");
+                  print("OrderPage: ontheload - Snapshot hoặc snapshot.docs là null.");
                }
             }, onError: (e) {
-              print("OrderPage: ontheload - An error occurred: $e");
+              print("OrderPage: ontheload - Đã xảy ra lỗi: $e");
                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text("Đã có lỗi xảy ra: $e"),
                      backgroundColor: Colors.red,
@@ -70,13 +70,13 @@ class _OrderState extends State<Order> {
   @override
   void initState() {
       super.initState();
-      print('OrderPage: initState called');
+      print('OrderPage: initState được gọi');
     ontheload();
   }
 
   @override
   void dispose() {
-      print('OrderPage: dispose called');
+      print('OrderPage: xử lý được gọi');
     _cartSubscription?.cancel();
     super.dispose();
   }
@@ -89,7 +89,7 @@ class _OrderState extends State<Order> {
     if (newQuantity < 1) return;
     try {
       print(
-          "OrderPage: _updateCartItemQuantity - Updating quantity for item ${ds.id}, currentQuantity: $currentQuantity, newQuantity: $newQuantity");
+          "OrderPage: _updateCartItemQuantity - Cập nhật số lượng cho mặt hàng ${ds.id}, currentQuantity: $currentQuantity, newQuantity: $newQuantity");
       await FirebaseFirestore.instance
           .collection('users')
           .doc(id)
@@ -99,17 +99,17 @@ class _OrderState extends State<Order> {
         "Quanlity": newQuantity.toString(),
       });
       print(
-          "OrderPage: _updateCartItemQuantity - Quantity updated successfully for item ${ds.id}, newQuantity: $newQuantity");
+          "OrderPage: _updateCartItemQuantity - Số lượng đã được cập nhật thành công cho mặt hàng ${ds.id}, newQuantity: $newQuantity");
     } catch (e) {
-      print('OrderPage: Error updating quantity $e');
+      print('Trang đặt hàng: Lỗi cập nhật số lượng $e');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
-          content: Text("Error updating quantity")));
+          content: Text("lỗi update số lượng")));
     }
   }
 
   Future<void> _deleteCartItem(DocumentSnapshot ds) async {
-    print('OrderPage: _deleteCartItem called for item ${ds.id}');
+    print('OrderPage: _deleteCartItem được gọi cho mục ${ds.id}');
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -118,7 +118,7 @@ class _OrderState extends State<Order> {
           .doc(ds.id)
           .delete();
       print(
-          'OrderPage: _deleteCartItem - Item ${ds.id} has been deleted successfully');
+          'Trang đặt hàng: _deleteCartItem - Mặt hàng ${ds.id} đã được xóa thành công');
     } catch (e) {
       print('OrderPage: Error deleting item $e');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -153,7 +153,7 @@ class _OrderState extends State<Order> {
                 return const Center(child: CircularProgressIndicator());
              }
             if (snapshot.hasError) {
-              print("OrderPage: foodCart - Snapshot has error ${snapshot.error}");
+              print("OrderPage: foodCart - Ảnh chụp có lỗi ${snapshot.error}");
               return const Center(child: Text("Đã có lỗi xảy ra khi load giỏ hàng"));
             }
                if (cartItems.isEmpty) {
@@ -267,7 +267,7 @@ class _OrderState extends State<Order> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar( //Nút back tự động các trang
         title: Text(
           "Giỏ Hàng",
           style: AppWidget.HeadlineTextFeildStyle(),
@@ -275,7 +275,7 @@ class _OrderState extends State<Order> {
         centerTitle: true,
         elevation: 2.0,
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
+        //iconTheme: const IconThemeData(color: Colors.black),
          
       ),
       body: Container(

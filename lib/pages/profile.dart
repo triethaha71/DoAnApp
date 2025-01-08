@@ -1,4 +1,3 @@
-// profile.dart
 import 'dart:io';
 import 'dart:convert';
 import 'package:appdatfood/pages/OrderHistoryPage.dart';
@@ -21,10 +20,10 @@ class Profile extends StatefulWidget {
 // Service for Imgur
 class ImgurService {
   static const String clientId =
-      "15f738ce9e52f01"; // Replace with your Imgur Client ID
+      "15f738ce9e52f01"; /// ID IMGUR
   static Future<String?> uploadImageToImgur(File imageFile) async {
     try {
-      final Uri apiUrl = Uri.parse("https://api.imgur.com/3/image");
+      final Uri apiUrl = Uri.parse("https://api.imgur.com/3/image"); 
 
       final request = http.MultipartRequest("POST", apiUrl);
       request.headers["Authorization"] = "Client-ID $clientId";
@@ -39,14 +38,14 @@ class ImgurService {
         final Map<String, dynamic> jsonResponse =
             json.decode(responseData.body);
 
-        // Get image link from JSON response
+        // Lấy liên kết hình ảnh từ phản hồi JSON
         return jsonResponse["data"]["link"];
       } else {
-        print("Failed to upload image: ${response.statusCode}");
+        print("Không tải được hình ảnh: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("Error uploading image: $e");
+      print("Lỗi khi tải hình ảnh lên: $e");
       return null;
     }
   }
@@ -95,7 +94,7 @@ class _ProfileState extends State<Profile> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "No image was selected to upload.",
+            "Không có hình ảnh nào được chọn để tải lên",
             style: TextStyle(fontSize: 18.0),
           )));
       return;
@@ -124,7 +123,7 @@ class _ProfileState extends State<Profile> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "Failed to upload image",
+              "Không tải được hình ảnh lên",
               style: TextStyle(fontSize: 18.0),
             )));
       }
@@ -135,7 +134,7 @@ class _ProfileState extends State<Profile> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "Error uploading profile image: $e",
+            "Lỗi khi tải ảnh hồ sơ lên: $e",
             style: const TextStyle(fontSize: 18.0),
           )));
     }
@@ -143,14 +142,12 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _saveName() async {
     setState(() {
-      _isEditingName = false; // Exit editing mode
-      name = _nameController.text; // Update name with the edited value
+      _isEditingName = false; 
+      name = _nameController.text;
     });
 
     try {
-      await SharedPreferenceHelper().saveUserName(name!); // Save to SharedPref
-        // You may need to call a function here to update the name in Firestore as well if it's being stored there
-       // await DatabaseMethods().updateName(name!);
+      await SharedPreferenceHelper().saveUserName(name!); 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Color.fromARGB(255, 11, 156, 85),
         content: Text("Tên đã được cập nhật!", style: TextStyle(fontSize: 18.0)),
@@ -418,11 +415,12 @@ class _ProfileState extends State<Profile> {
                             ),
                     ),
                     if (!_isEditingName)
+                     // Turn editing on
                     IconButton(
                        icon: const Icon(Icons.edit),
                        onPressed: () {
                          setState(() {
-                           _isEditingName = true; // Turn editing on
+                           _isEditingName = true;
                          });
                        },
                       ),
@@ -493,7 +491,7 @@ class _ProfileState extends State<Profile> {
             onTap: () async {
               String? userId = await SharedPreferenceHelper().getUserId();
               print(
-                  'ProfilePage: userId before navigating to OrderHistoryPage: $userId');
+                  'Trang hồ sơ: ID người dùng trước khi điều hướng đến Trang lịch sử đơn hàng: $userId');
               if (userId != null) {
                 Navigator.push(
                   context,
@@ -601,7 +599,7 @@ class _ProfileState extends State<Profile> {
           ),
           GestureDetector(
             onTap: () {
-              print('ProfilePage: delete account button tapped');
+              print('ProfilePage: nút xóa tài khoản đã được nhấn');
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -623,7 +621,7 @@ class _ProfileState extends State<Profile> {
                             if (context != null) {
                               await AuthMethods().deleteuser(context);
                               print(
-                                  'ProfilePage: AuthMethods().deleteuser() called');
+                                  'ProfilePage: AuthMethods().deleteuser() được gọi');
                             }
                           },
                           child: const Text("Xóa"),
@@ -681,9 +679,9 @@ class _ProfileState extends State<Profile> {
           ),
           GestureDetector(
             onTap: () {
-              print('ProfilePage: log out button tapped');
+              print('ProfilePage: nút đăng xuất đã được nhấn');
               AuthMethods().SignOut(context);
-              print('ProfilePage: AuthMethods().signOut() called');
+              print('ProfilePage: AuthMethods().signOut() được gọi');
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20.0),

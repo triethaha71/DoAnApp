@@ -19,18 +19,18 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
   @override
   void initState() {
-    print("OrderHistoryPage: initState called for user ${widget.userId}");
-    print('OrderHistoryPage: userId in initState: ${widget.userId}');
+    print("OrderHistoryPage: initState được gọi cho người dùng ${widget.userId}");
+    print('OrderHistoryPage: userId trong initState: ${widget.userId}');
     onthisload();
     super.initState();
   }
 
   Future<void> onthisload() async {
-    print("OrderHistoryPage: onthisload called for user ${widget.userId}");
-    print('OrderHistoryPage: userId in onthisload: ${widget.userId}');
+    print("OrderHistoryPage: onthisload được gọi cho người dùng ${widget.userId}");
+    print('OrderHistoryPage: userId trong tải này: ${widget.userId}');
     orderStream = await DatabaseMethods().getOrderHistory(widget.userId);
     if (mounted) {
-      print("OrderHistoryPage: onthisload - setState called");
+      print("OrderHistoryPage: onthisload - setState được gọi");
       setState(() {});
     }
   }
@@ -39,17 +39,17 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: orderStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        print("OrderHistoryPage: StreamBuilder - snapshot: ${snapshot.toString()}");
+        print("OrderHistoryPage: StreamBuilder - ảnh chụp nhanh: ${snapshot.toString()}");
 
         if (!snapshot.hasData) {
-          print("OrderHistoryPage: StreamBuilder - No data");
+          print("OrderHistoryPage: StreamBuilder - Không có dữ liệu");
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          print("OrderHistoryPage: StreamBuilder - Error: ${snapshot.error}");
-          return const Center(child: Text("Error loading order history"));
+          print("OrderHistoryPage: StreamBuilder - Lỗi: ${snapshot.error}");
+          return const Center(child: Text("Lỗi khi tải lịch sử đơn hàng"));
         }
-        print("OrderHistoryPage: StreamBuilder - Data available - ${snapshot.data!.docs.length} document(s)");
+        print("OrderHistoryPage: StreamBuilder - Dữ liệu có sẵn - ${snapshot.data!.docs.length} document(s)");
         final orderDocs = snapshot.data!.docs;
         return ListView.builder(
           padding: EdgeInsets.zero,
@@ -57,7 +57,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
-            print("OrderHistoryPage: ListView.builder - Processing order at index $index");
+            print("OrderHistoryPage: ListView.builder - Xử lý đơn hàng tại chỉ mục $index");
             final ds = orderDocs[index];
             final List<dynamic> items = ds["items"] as List;
             final String deliveryAddress = (ds.data() as Map<String, dynamic>)["deliveryAddress"] as String? ?? "Không có địa chỉ giao hàng";

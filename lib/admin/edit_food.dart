@@ -129,7 +129,7 @@ class _EditFoodState extends State<EditFood> {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.red,
               content: Text(
-                "Failed to update food item",
+                "Không cập nhật được món ăn",
                 style: TextStyle(fontSize: 18.0),
               )));
         }
@@ -137,7 +137,7 @@ class _EditFoodState extends State<EditFood> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.red,
             content: Text(
-              "Failed to upload image",
+              "Upload hình ảnh thất bại",
               style: TextStyle(fontSize: 18.0),
             )));
       }
@@ -146,7 +146,7 @@ class _EditFoodState extends State<EditFood> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "Please fill in all fields",
+            "Vui lòng điền đầy đủ thông tin",
             style: TextStyle(fontSize: 18.0),
           )));
     }

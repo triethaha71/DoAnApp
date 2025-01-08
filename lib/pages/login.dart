@@ -49,15 +49,15 @@ class _LoginState extends State<Login> {
       }
     }
   }
-
+  // google
   void googleSignIn() async {
     print("LoginPage: googleSignIn called");
     AuthMethods().signInWithGoogle(context);
   }
-
+  // facebook
   void facebookSignIn() async {
     print("LoginPage: facebookSignIn called");
-    // logic đăng nhập facebook
+    
   }
 
   @override

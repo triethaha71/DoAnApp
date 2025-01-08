@@ -244,26 +244,26 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       ),
     );
   }
-
+  // Qua trinh thanh toan
    Future<void> _processPayment() async {
     print(
-        "PaymentOptionsPage: _processPayment called, selectedPaymentMethod: $selectedPaymentMethod");
+        "PaymentOptionsPage: _processPayment đã gọi, đã chọnPaymentMethod: $selectedPaymentMethod");
     String message;
       if (selectedPaymentMethod == 'wallet') {
          int walletAmount = int.parse(widget.wallet);
       if (walletAmount < widget.total) {
         message = "Số tiền trong ví không đủ!";
         print(
-            "PaymentOptionsPage: _processPayment - Wallet insufficient: walletAmount=$walletAmount, total=${widget.total}");
+            "PaymentOptionsPage: _processPayment - Ví không đủ: walletAmount=$walletAmount, total=${widget.total}");
       }else{
            int amount = walletAmount - widget.total;
          print(
-            "PaymentOptionsPage: _processPayment - Wallet payment processing: previousWallet=$walletAmount, total=${widget.total}, newWallet=$amount");
+            "PaymentOptionsPage: _processPayment - Xử lý thanh toán bằng ví: previousWallet=$walletAmount, total=${widget.total}, newWallet=$amount");
         await DatabaseMethods()
             .UpdateUserwallet(widget.userId, amount.toString());
         await SharedPreferenceHelper().saveUserWallet(amount.toString());
          print(
-            "PaymentOptionsPage: _processPayment - Wallet updated, calling _saveOrderHistory and clearCart");
+            "PaymentOptionsPage: _processPayment - Ví đã được cập nhật, gọi _saveOrderHistory và clearCart");
           // Lưu thông tin order vào Firestore
         await _saveOrderHistory();
         await DatabaseMethods().clearCart(widget.userId);
@@ -273,7 +273,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
 
     } else if(selectedPaymentMethod == 'cod' && _addressController.text.isNotEmpty){
          print(
-          "PaymentOptionsPage: _processPayment - COD payment processing, calling _saveOrderHistory and clearCart");
+          "PaymentOptionsPage: _processPayment - Xử lý thanh toán COD, gọi _saveOrderHistory và clearCart");
       // Lưu thông tin order vào Firestore
         await _saveOrderHistory();
       await DatabaseMethods().clearCart(widget.userId);
@@ -283,7 +283,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
      else {
           message = "Vui lòng chọn phương thức thanh toán và nhập địa chỉ (nếu cần)";
     }
-     print("PaymentOptionsPage: _processPayment - Payment completed, message: $message");
+     print("PaymentOptionsPage: _processPayment - Thanh toán đã hoàn tất, thông báo: $message");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -292,9 +292,9 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
 
 
   Future<void> _saveOrderHistory() async {
-    print("PaymentOptionsPage: _saveOrderHistory called");
+    print("PaymentOptionsPage: _saveOrderHistory được gọi");
     print(
-        'PaymentOptionsPage: userId before saveOrderHistory: ${widget.userId}'); // Log userId
+        'Trang Tùy chọn thanh toán: ID người dùng trước khi lưu Lịch sử đơn hàng: ${widget.userId}'); // Log userId
     List<Map<String, dynamic>> items = widget.cartItems.map((item) {
       int price = int.tryParse(item["Price"] ?? "0") ?? 0;
       int quantity = int.tryParse(item["Quanlity"] ?? "1") ?? 1;
@@ -306,7 +306,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
         'Price': item['Price'],
       };
     }).toList();
-    print("PaymentOptionsPage: _saveOrderHistory - items to be saved: $items");
+    print("PaymentOptionsPage: _saveOrderHistory - các mục cần lưu: $items");
     await DatabaseMethods().saveOrderHistory(
       widget.userId,
       items,
@@ -314,6 +314,6 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       selectedPaymentMethod!,
       _addressController.text.trim(),
     );
-    print("PaymentOptionsPage: _saveOrderHistory - order history saved");
+    print("PaymentOptionsPage: _saveOrderHistory - lịch sử đơn hàng đã lưu");
   }
 }

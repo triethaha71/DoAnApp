@@ -19,13 +19,13 @@ class _AdminLoginState extends State<AdminLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFf0f2f5), // Light grey background
-      body: SingleChildScrollView( // Make the screen scrollable
+      backgroundColor: const Color(0xFFf0f2f5), 
+      body: SingleChildScrollView(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height, // Occupy the full screen height
+          height: MediaQuery.of(context).size.height, 
           child: Stack(
             children: [
-              // Background Gradient
+              
               Container(
                 height: MediaQuery.of(context).size.height * 0.4, // Adjust the height as desired
                 decoration: const BoxDecoration(
@@ -57,7 +57,7 @@ class _AdminLoginState extends State<AdminLogin> {
                         );
                       },
                     ),
-                    const SizedBox(height: 30), // Khoảng cách giữa icon và phần tử bên dưới
+                    const SizedBox(height: 30), 
                   ],
                 ),
               ),
@@ -67,7 +67,7 @@ class _AdminLoginState extends State<AdminLogin> {
               // Main Content
               Center(
                 child: Container(
-                    margin: const EdgeInsets.only(top: 100), // Adjusted margin
+                    margin: const EdgeInsets.only(top: 100), 
                     padding: const EdgeInsets.all(20.0),
                     width: MediaQuery.of(context).size.width * 0.85,
                     decoration: BoxDecoration(
@@ -220,7 +220,7 @@ class _AdminLoginState extends State<AdminLogin> {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   backgroundColor: Colors.orangeAccent,
                   content: Text(
-                    "Your password is not correct",
+                    "Mật khẩu của bạn không đúng",
                     style: TextStyle(fontSize: 18.0),
                   ),
                 ));
@@ -236,7 +236,7 @@ class _AdminLoginState extends State<AdminLogin> {
            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Color.fromARGB(255, 9, 134, 28),
                 content: Text(
-                  "Your id is incorrect",
+                  "Tài khoản của bạn không đúng",
                   style: TextStyle(fontSize: 18.0),
                 ),
               ));

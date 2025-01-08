@@ -14,7 +14,7 @@ class AuthMethods {
   Future<User?> getCurrentUser() async {
     return auth.currentUser;
   }
-
+  //xác thực lại người dùng
   Future<void> reauthenticateUser(User user, String currentPassword) async {
     try {
       final AuthCredential credential = EmailAuthProvider.credential(
@@ -40,18 +40,19 @@ class AuthMethods {
   Future<void> SignOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      print('AuthMethods: SignOut - User has signed out successfully');
+      print('AuthMethods: SignOut - Người dùng đã đăng xuất thành công');
       _showSnackBar(context, 'Đăng xuất thành công!', isError: false);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Login()),
       );
-      print('AuthMethods: SignOut - Navigated to Login Page');
+      print('AuthMethods: SignOut - Đã điều hướng đến Trang đăng nhập');
     } on FirebaseAuthException catch (e) {
-      print('AuthMethods: SignOut - error: $e');
+      print('AuthMethods: Đăng xuất - lỗi: $e');
       _showSnackBar(context, "Lỗi khi đăng xuất. $e");
     }
   }
+
 
   Future<void> resetPassword(BuildContext context, String email) async {
     try {
@@ -70,14 +71,14 @@ class AuthMethods {
       User? user = await FirebaseAuth.instance.currentUser;
       if (user != null) {
         print(
-            "AuthMethods: deleteuser - deleting user in Firestore with id ${user.uid}");
+            "AuthMethods: deleteuser - xóa người dùng trong Firestore có id ${user.uid}");
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .delete();
         await user.delete();
         print(
-            "AuthMethods: deleteuser successfully - deleted user ${user.uid} on firestore and auth");
+            "AuthMethods: deleteuser thành công - người dùng đã bị xóa ${user.uid} trên firebase và autho");
         if (context != null && context.mounted) {
           _showSnackBar(context, "Tài khoản đã được xóa thành công!",
               isError: false);
@@ -85,7 +86,7 @@ class AuthMethods {
             context,
             MaterialPageRoute(builder: (context) => const Signup()),
           );
-          print('AuthMethods: deleteuser - Navigated to Signup Page');
+          print('AuthMethods: deleteuser - Đã điều hướng đến Trang đăng ký');
         } else {
           print(
               "AuthMethods: deleteuser - context is invalid, cannot navigate to signup page");
@@ -94,14 +95,14 @@ class AuthMethods {
               isError: true);
         }
       } else {
-        print("AuthMethods: deleteuser - No user logged in, cannot delete");
+        print("AuthMethods: deleteuser - Không có người dùng nào đăng nhập, không thể xóa");
         _showSnackBar(context, "Không có người dùng đăng nhập, không thể xóa.",
             isError: true);
       }
     } on FirebaseAuthException catch (e) {
       print("AuthMethods: Error delete user $e");
       if (e.code == 'user-not-found') {
-        print('AuthMethods: deleteuser - user not found, cannot delete');
+        print('AuthMethods: deleteuser - không tìm thấy người dùng, không thể xóa');
         _showSnackBar(context, "Người dùng không tồn tại, không thể xóa.",
             isError: true);
       } else {
@@ -115,40 +116,40 @@ class AuthMethods {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        print("AuthMethods: signInWithGoogle - user cancel google signin");
+        print("AuthMethods: signInWithGoogle - người dùng hủy đăng nhập google");
         _showSnackBar(context, "Đăng nhập Google bị hủy.", isError: true);
         return;
       }
-      print("AuthMethods: signInWithGoogle - get Google auth");
+      print("AuthMethods: signInWithGoogle - nhận xác thực Google");
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      print("AuthMethods: signInWithGoogle - get Firebase auth credential");
+      print("AuthMethods: signInWithGoogle - nhận xác thực Google");
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      print("AuthMethods: signInWithGoogle - Sign in to Firebase Auth");
+      print("AuthMethods: signInWithGoogle - Đăng nhập vào Firebase Auth");
       final UserCredential userCredential =
           await auth.signInWithCredential(credential);
       print(
-          "AuthMethods: signInWithGoogle - signed in successfully, user = ${userCredential.user?.uid}");
+          "AuthMethods: signInWithGoogle - đã đăng nhập thành công, người dùng = ${userCredential.user?.uid}");
       User? user = userCredential.user;
       if (user != null) {
-        // Save user info
+        // Lưu thông tin người dùng
         await SharedPreferenceHelper().saveUserId(user.uid);
         await SharedPreferenceHelper()
             .saveUserName(user.displayName ?? 'Name');
         await SharedPreferenceHelper().saveUserEmail(user.email ?? 'Email');
         await SharedPreferenceHelper().saveUserProfile(user.photoURL ?? '');
 
-        // Check if user exists
+        // Kiểm tra xem người dùng có tồn tại không
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .get();
         if (!userDoc.exists) {
           print(
-              "AuthMethods: signInWithGoogle - user does not exist on firestore, adding information");
+              "AuthMethods: signInWithGoogle - người dùng không tồn tại trên firestore, đang thêm thông tin");
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
@@ -159,10 +160,10 @@ class AuthMethods {
             'Wallet': "0",
           });
           print(
-              "AuthMethods: signInWithGoogle - user information has been added on firestore, user = ${user.uid}");
+              "AuthMethods: signInWithGoogle - thông tin người dùng đã được thêm vào firestore, user = ${user.uid}");
         } else {
           print(
-              "AuthMethods: signInWithGoogle - user already existed on firestore, user = ${user.uid}");
+              "AuthMethods: signInWithGoogle - người dùng đã tồn tại trên firestore, người dùng = ${user.uid}");
         }
 
         if (context != null && context.mounted) {
@@ -170,17 +171,17 @@ class AuthMethods {
             context,
             MaterialPageRoute(builder: (context) => const Bottomnav()),
           );
-          print("AuthMethods: signInWithGoogle - Navigated to HomePage");
+          print("AuthMethods: signInWithGoogle - Đã điều hướng đến Trang chủ");
         }
       } else {
         print(
-            "AuthMethods: signInWithGoogle - User from firebase auth is null, cannot log in with google");
+            "AuthMethods: signInWithGoogle - Người dùng từ xác thực firebase là null, không thể đăng nhập bằng google");
         _showSnackBar(context,
-            "User từ Firebase Auth là null, không thể đăng nhập với Google.",
+            "Người dùng từ Firebase Auth là null, không thể đăng nhập vào Google.",
             isError: true);
       }
     } on FirebaseAuthException catch (e) {
-      print("AuthMethods: signInWithGoogle - FirebaseAuthException: $e");
+      print("Phương pháp xác thực: signInWithGoogle - FirebaseAuthException: $e");
       _showSnackBar(context, "Lỗi khi đăng nhập Google, $e");
     }
   }

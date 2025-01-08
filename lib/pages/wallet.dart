@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:appdatfood/service/database.dart';
 import 'package:appdatfood/service/shared_pref.dart';
 import 'package:appdatfood/widget/app_constant.dart';
-import 'package:appdatfood/widget/widget_support.dart';
+import 'package:appdatfood/widget/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +22,8 @@ class _WalletState extends State<Wallet> {
   final formatCurrency = NumberFormat.currency(locale: 'en_US', symbol: '\$');
   final formatCurrencyVND = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
+// phương thức thanh toán đã chọn
+  String? _selectedPaymentMethod;
 
   getthesharedpref() async {
     wallet = await SharedPreferenceHelper().getUserWallet();
@@ -46,193 +47,130 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar( ///Nút back về 1 cách tự động
+        title: Center(
+            child: const Text(
+          'Ví của tôi',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+      ),
       body: wallet == null
-          ? const CircularProgressIndicator()
-          : Container(
-              margin: const EdgeInsets.only(top: 60.0),
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Material(
-                      elevation: 2.0,
-                      child: Container(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Center(
-                              child: Text(
-                            "Ví của tôi",
-                            style: AppWidget.HeadlineTextFeildStyle(),
-                          )))),
-                  const SizedBox(
-                    height: 30.0,
+                  WalletBalanceCard(
+                      balance: wallet!,
+                      formatCurrency: formatCurrency,
+                      formatCurrencyVND: formatCurrencyVND),
+                  const SizedBox(height: 30),
+                  Text(
+                    "Lựa chọn",
+                    style: AppTheme.getSemiBoldTextStyle(),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(color: Color(0xFFF2F2F2)),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "images/wallet.png",
-                          height: 60,
-                          width: 60,
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(
-                          width: 40.0,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Số dư",
-                              style: AppWidget.LightTextFeildStyle(),
-                            ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            Row(
-                             children: [
-                                 Text(
-                                   formatCurrency.format(int.tryParse(wallet ?? "0") ?? 0).replaceAll(".00", ""), // Remove trailing .00
-                                   style: AppWidget.boldTextFeildStyle(),
-                                 ),
-                              const SizedBox(width: 5.0),
-                              const Text(
-                                "≈",
-                                style: TextStyle(
-                                  fontSize: 15.0
-                                )
-                              ),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                formatCurrencyVND.format((int.tryParse(wallet ?? "0") ?? 0) * 24000),
-                                style: AppWidget.LightTextFeildStyle(),
-                             )
-                             ],
-                            )
-
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Text(
-                      "Lựa chọn",
-                      style: AppWidget.semiBooldTextFeildStyle(),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('50');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            formatCurrency.format(50).replaceAll(".00", ""),
-                            style: AppWidget.semiBooldTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('100');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            formatCurrency.format(100).replaceAll(".00", ""),
-                            style: AppWidget.semiBooldTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                           makePayment('500');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            formatCurrency.format(500).replaceAll(".00", ""),
-                            style: AppWidget.semiBooldTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                           makePayment('1000');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            formatCurrency.format(1000).replaceAll(".00", ""),
-                            style: AppWidget.semiBooldTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      openEdit();
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1e3c72),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Nạp tiền",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  )
+                  const SizedBox(height: 20),
+                  _buildOptionButtons(context),
+                  const SizedBox(height: 30),
+                  PaymentMethodSection(
+                      selectedPaymentMethod: _selectedPaymentMethod,
+                      onPaymentMethodChanged: (value) {
+                        setState(() {
+                          _selectedPaymentMethod = value;
+                        });
+                      }),
+                  const SizedBox(height: 30),
+                  _buildDepositButton(context),
                 ],
               ),
             ),
     );
   }
 
+
+  Widget _buildOptionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildOptionButton(context, "50"),
+        _buildOptionButton(context, "100"),
+        _buildOptionButton(context, "500"),
+        _buildOptionButton(context, "1000"),
+      ],
+    );
+  }
+
+  Widget _buildOptionButton(BuildContext context, String amount) {
+    final formatCurrency =
+        NumberFormat.currency(locale: 'en_US', symbol: '\$');
+    return GestureDetector(
+      onTap: () {
+        _handlePayment(amount);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppTheme.cardBackground,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+            ),
+          ],
+        ),
+        child: Text(
+          formatCurrency.format(int.parse(amount)).replaceAll(".00", ""),
+          style: AppTheme.getSemiBoldTextStyle(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDepositButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        openEdit();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+            color: const Color(0xFF1e3c72),
+            borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.only(bottom: 0),
+        child: const Center(
+            child: Text(
+          "Nạp tiền",
+          style: TextStyle(
+              color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
+        )),
+      ),
+    );
+  }
+
+  void _handlePayment(String amount) {
+    if (_selectedPaymentMethod == 'master_card') {
+      makePayment(amount);
+    } else if (_selectedPaymentMethod == 'zalo_pay') {
+      makeZaloPayPayment(amount);
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => const AlertDialog(
+          content: Text("Vui lòng chọn phương thức thanh toán"),
+        ),
+      );
+    }
+  }
+
   Future<void> makePayment(String amount) async {
     try {
-      // Tạo Payment Intent
+      // Tạo ý định thanh toán
       paymentIntent = await createPaymentIntent(amount, 'USD');
-      // Khởi tạo Payment Sheet
+      // Khởi tạo Bảng thanh toán
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntent!['client_secret'],
@@ -240,10 +178,39 @@ class _WalletState extends State<Wallet> {
           merchantDisplayName: 'Adnan',
         ),
       );
-      // Hiển thị Payment Sheet
+      // Hiển thị Bảng thanh toán
       await displayPaymentSheet(amount);
     } catch (e, s) {
       print('Exception in makePayment: $e$s');
+    }
+  }
+
+  Future<void> makeZaloPayPayment(String amount) async {
+    try {
+      print("Zalo pay is clicked: $amount");
+      add = int.parse(wallet!) + int.parse(amount);
+      await SharedPreferenceHelper().saveUserWallet(add.toString());
+      await DatabaseMethods().UpdateUserwallet(id!, add.toString());
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text("Nạp tiền thành công!!"),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+      await getthesharedpref();
+    } catch (e, s) {
+      print('Exception in makeZaloPayPayment: $e$s');
     }
   }
 
@@ -274,18 +241,18 @@ class _WalletState extends State<Wallet> {
       );
 
       await getthesharedpref();
-
-      paymentIntent = null; // Reset trạng thái
+      // Reset trạng thái
+      paymentIntent = null; 
     } on StripeException catch (e) {
-      print('StripeException: $e');
+      print('Ngoại lệ Stripe: $e');
       showDialog(
         context: context,
         builder: (_) => const AlertDialog(
-          content: Text("Payment Cancelled"),
+          content: Text("Thanh toán đã bị hủy"),
         ),
       );
     } catch (e) {
-      print('Unknown Exception: $e');
+      print('Ngoại lệ không xác định: $e');
     }
   }
 
@@ -310,11 +277,11 @@ class _WalletState extends State<Wallet> {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        throw Exception('Failed to create Payment Intent');
+        throw Exception('Không tạo được Ý định thanh toán');
       }
     } catch (err) {
-      print('Error creating Payment Intent: $err');
-      throw Exception('Error creating Payment Intent');
+      print('Lỗi khi tạo Ý định thanh toán: $err');
+      throw Exception('Lỗi khi tạo Ý định thanh toán');
     }
   }
 
@@ -326,73 +293,49 @@ class _WalletState extends State<Wallet> {
       context: context,
       builder: (context) => AlertDialog(
             content: SingleChildScrollView(
-              child: Container(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(Icons.cancel)),
-                         const SizedBox(
-                          width: 60.0,
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(Icons.cancel,
+                              size: 30, color: AppTheme.primaryColor),
                         ),
-                        const Center(
-                          child: Text("Nạp tiền",
-                              style: TextStyle(
-                                color: Color(0xFF008080),
+                        const Text("Nạp tiền",
+                            style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                              )),
-                        )
+                                fontSize: 20,
+                                color: AppTheme.primaryColor)),
+                        const SizedBox(width: 30),
                       ],
                     ),
-                   const SizedBox(
-                      height: 20.0,
+                    const SizedBox(height: 20),
+                    Text("Nhập mệnh giá", style: AppTheme.getSemiBoldTextStyle()),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: amountcontroller,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          hintText: "Nhập số tiền muốn nạp"),
                     ),
-                    const Text("Nhập mệnh giá"),
-                   const SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.black38, width: 2.0),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextField(
-                        controller: amountcontroller,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
                           Navigator.pop(context);
-                          makePayment(amountcontroller.text);
+                          _handlePayment(amountcontroller.text);
                         },
-                        child: Container(
-                          width: 100,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1e3c72),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Center(
-                              child: Text(
-                            "Xác nhận",
-                            style: TextStyle(color: Colors.white),
-                          )),
-                        ),
+                        child: const Text("Xác nhận"),
                       ),
                     )
                   ],
@@ -400,4 +343,158 @@ class _WalletState extends State<Wallet> {
               ),
             ),
           ));
+}
+
+class WalletBalanceCard extends StatefulWidget {
+  const WalletBalanceCard({
+    super.key,
+    required this.balance,
+    required this.formatCurrency,
+    required this.formatCurrencyVND,
+  });
+
+  final String balance;
+  final NumberFormat formatCurrency;
+  final NumberFormat formatCurrencyVND;
+
+  @override
+  State<WalletBalanceCard> createState() => _WalletBalanceCardState();
+}
+
+class _WalletBalanceCardState extends State<WalletBalanceCard> {
+  bool _showUSD = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.wallet,
+            size: 60,
+            color: AppTheme.primaryColor,
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Số dư",
+                  style: AppTheme.getLightTextStyle(),
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      _showUSD
+                          ? widget.formatCurrency
+                          .format(int.tryParse(widget.balance) ?? 0)
+                          .replaceAll(".00", "")
+                          : widget.formatCurrencyVND.format((int.tryParse(widget.balance) ?? 0) * 24000),
+                      style: AppTheme.getBoldTextStyle(),
+                    ),
+                     const SizedBox(width: 5.0),
+                    GestureDetector(
+                        onTap: () {
+                            setState(() {
+                              _showUSD = !_showUSD;
+                            });
+                        },
+                        child: const Text("≈",
+                            style: TextStyle(
+                                fontSize: 20.0
+                            )
+                        ),
+                    ),
+                    const SizedBox(width: 5.0),
+                   if(_showUSD == true)
+                      Text(
+                        widget.formatCurrencyVND.format((int.tryParse(widget.balance) ?? 0) * 24000),
+                        style: AppTheme.getLightTextStyle(),
+                      )
+                   else
+                      Text(
+                        widget.formatCurrency
+                            .format(int.tryParse(widget.balance) ?? 0)
+                            .replaceAll(".00", ""),
+                        style: AppTheme.getLightTextStyle(),
+                      )
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class PaymentMethodSection extends StatelessWidget {
+  const PaymentMethodSection({
+    super.key,
+    required String? selectedPaymentMethod,
+    required this.onPaymentMethodChanged,
+  }) : _selectedPaymentMethod = selectedPaymentMethod;
+
+  final String? _selectedPaymentMethod;
+  final Function(String?) onPaymentMethodChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Chọn phương thức thanh toán:",
+              style: AppTheme.getSemiBoldTextStyle()),
+          Row(
+            children: [
+              Radio<String>(
+                value: 'zalo_pay',
+                groupValue: _selectedPaymentMethod,
+                onChanged: onPaymentMethodChanged,
+                activeColor: AppTheme.primaryColor,
+              ),
+              const Text('Zalo Pay', style: TextStyle(fontSize: 17)),
+              const SizedBox(width: 50),
+               Image.asset('images/zalo_pay.png', width: 30, height: 30),
+            ],
+          ),
+          SizedBox(height: 10,),
+          Row(
+            children: [
+              Radio<String>(
+                value: 'master_card',
+                groupValue: _selectedPaymentMethod,
+                onChanged: onPaymentMethodChanged,
+                activeColor: AppTheme.primaryColor,
+              ),
+              const Text('Master Card', style: TextStyle(fontSize: 17)),
+               const SizedBox(width: 20),
+               Image.asset('images/master_card.png', width: 30, height: 30),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

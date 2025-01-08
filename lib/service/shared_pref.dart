@@ -22,7 +22,7 @@ class SharedPreferenceHelper {
     return prefs.setString(userEmailKey, getUserEmail);
   }
 
-  Future<bool> saveUserWallet(String getUserWallet) async {
+  Future<bool> saveUserWallet(String getUserWallet) async { 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(userWalletKey, getUserWallet);
   }

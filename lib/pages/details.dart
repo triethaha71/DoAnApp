@@ -60,11 +60,11 @@ class _DetailsState extends State<Details> {
   final TextEditingController _commentController = TextEditingController();
   double _rating = 0.0;
 
-  // List to hold reviews
+  // Giữ các đánh giá
   List<Review> _reviews = [];
   final ScrollController _scrollController = ScrollController();
 
-  // Stream for review updates
+  //Xem lại cập nhật
   late Stream<QuerySnapshot> _reviewStream;
 
   getthesharepref() async {
@@ -89,7 +89,7 @@ class _DetailsState extends State<Details> {
       numericalPrice = 0.0;
       total = 0.0;
     }
-    //initialize stream review
+    //Khởi tạo đáng giá
     _reviewStream = FirebaseFirestore.instance
         .collection('food_reviews')
         .doc(widget.name)
@@ -128,10 +128,12 @@ class _DetailsState extends State<Details> {
         'timestamp': Timestamp.now()
 
       });
+
       _commentController.clear();
       setState(() {
-        _rating = 0.0; // Reset rating
+        _rating = 0.0; // Reset sao
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               backgroundColor: Colors.green,
@@ -167,7 +169,7 @@ class _DetailsState extends State<Details> {
                 Row(
                   children: [
                     Text('Đánh giá: ', style: AppWidget.semiBooldTextFeildStyle()),
-                    // Rating Stars
+                    //Đánh giá sao
                     Flexible(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -329,7 +331,7 @@ class _DetailsState extends State<Details> {
                               ),
                             ],
                           ),
-                          const Spacer(),
+                          const Spacer(), // khoang cach
                           GestureDetector(
                             onTap: () {
                               if (a > 1) {
@@ -340,7 +342,7 @@ class _DetailsState extends State<Details> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.black,
+                                  color: Color(0xFF1e3c72),
                                   borderRadius: BorderRadius.circular(8)),
                               child: const Icon(
                                 Icons.remove,
@@ -366,7 +368,7 @@ class _DetailsState extends State<Details> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.black,
+                                  color: Color(0xFF1e3c72),
                                   borderRadius: BorderRadius.circular(8)),
                               child: const Icon(
                                 Icons.add,
@@ -448,7 +450,7 @@ class _DetailsState extends State<Details> {
                       // Button to submit review
                       ElevatedButton(onPressed: _submitReview,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Color(0xFF1e3c72),
                           ),
                           child: const Text('Gửi bình luận',style: TextStyle(color: Colors.white),)),
                       const SizedBox(height: 10.0),
@@ -529,7 +531,7 @@ class _DetailsState extends State<Details> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Color(0xFF1e3c72),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
